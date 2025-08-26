@@ -182,7 +182,7 @@ const formatMonth = (monthKey: string): string => {
 };
 
 const renderChart = async () => {
-  if (!chartContainer.value || !chartData.value || !chartData.value.months.length) return;
+  if (!chartContainer.value || !hasData.value) return;
 
   try {
     // Dynamic import ApexCharts
@@ -193,7 +193,10 @@ const renderChart = async () => {
       chartInstance.destroy();
     }
 
-    const { months, brands, data } = chartData.value as ChartData;
+    const chartDataValue = chartData.value;
+    if (!chartDataValue) return;
+
+    const { months, brands, data } = chartDataValue;
     
     if (!months.length || !brands.length) return;
 
@@ -206,7 +209,7 @@ const renderChart = async () => {
 
     const options = {
       chart: {
-        type: 'bar',
+        type: 'bar' as const,
         height: 320,
         toolbar: {
           show: false
