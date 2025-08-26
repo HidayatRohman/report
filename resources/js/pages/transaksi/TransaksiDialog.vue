@@ -47,7 +47,7 @@
             <input 
               type="number" 
               id="nominal" 
-              v-model="form.nominal" 
+              v-model.number="form.nominal" 
               required 
               class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               placeholder="0"
@@ -106,7 +106,12 @@ watch(() => props.transaksi, (val) => {
 }, { immediate: true });
 
 function handleSubmit() {
-  emit('submit', { ...form.value });
+  // Ensure nominal is a number
+  const submitData = {
+    ...form.value,
+    nominal: typeof form.value.nominal === 'string' ? parseFloat(form.value.nominal) : form.value.nominal
+  };
+  emit('submit', submitData);
   emit('close');
 }
 </script>

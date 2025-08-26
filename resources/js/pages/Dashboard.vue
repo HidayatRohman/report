@@ -21,7 +21,10 @@ const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: num
 const totalBrand = computed(() => daftarBrand.value.length);
 const totalTransaksi = computed(() => daftarTransaksi.value.length);
 const totalNominal = computed(() => {
-  return daftarTransaksi.value.reduce((total, item) => total + item.nominal, 0);
+  return daftarTransaksi.value.reduce((total, item) => {
+    const nominal = typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal;
+    return total + (isNaN(nominal) ? 0 : nominal);
+  }, 0);
 });
 
 const transaksiHariIni = computed(() => {
@@ -51,7 +54,12 @@ onMounted(() => {
   const savedTransaksi = localStorage.getItem('daftarTransaksi');
   if (savedTransaksi) {
     try {
-      daftarTransaksi.value = JSON.parse(savedTransaksi);
+      const parsedTransaksi = JSON.parse(savedTransaksi);
+      // Normalize nominal values to numbers
+      daftarTransaksi.value = parsedTransaksi.map((item: any) => ({
+        ...item,
+        nominal: typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal
+      }));
     } catch (e) {
       console.error('Error parsing saved transactions:', e);
     }

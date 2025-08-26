@@ -88,8 +88,9 @@ const brandSummary = computed(() => {
     .filter(transaction => new Date(transaction.tanggal).getFullYear() === selectedYear.value)
     .forEach(transaction => {
       const existing = summary.get(transaction.brand) || { total: 0, transactions: 0 };
+      const nominal = typeof transaction.nominal === 'string' ? parseFloat(transaction.nominal) : transaction.nominal;
       summary.set(transaction.brand, {
-        total: existing.total + transaction.nominal,
+        total: existing.total + (isNaN(nominal) ? 0 : nominal),
         transactions: existing.transactions + 1
       });
     });
@@ -116,7 +117,8 @@ const chartSeries = computed(() => {
       )
       .forEach(transaction => {
         const month = new Date(transaction.tanggal).getMonth();
-        monthlyData[month] += transaction.nominal;
+        const nominal = typeof transaction.nominal === 'string' ? parseFloat(transaction.nominal) : transaction.nominal;
+        monthlyData[month] += isNaN(nominal) ? 0 : nominal;
       });
     
     return {

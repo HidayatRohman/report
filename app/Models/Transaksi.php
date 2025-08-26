@@ -17,6 +17,6 @@ class Transaksi extends Model
 
     protected $casts = [
         'tanggal' => 'date',
-        'nominal' => 'decimal:2',
+        'nominal' => 'float',
     ];
 }

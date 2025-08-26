@@ -23,6 +23,10 @@ class TransaksiSeeder extends Seeder
             ['tanggal' => '2025-06-25', 'brand' => 'Art Coffee', 'nominal' => 8769490],
             ['tanggal' => '2025-07-25', 'brand' => 'Nyore Nyante', 'nominal' => 8501700],
             ['tanggal' => '2025-08-25', 'brand' => 'Kemangi', 'nominal' => 12340100],
+            // Transaksi hari ini (26 Agustus 2025)
+            ['tanggal' => '2025-08-26', 'brand' => 'Nyore Nyante', 'nominal' => 1500000],
+            ['tanggal' => '2025-08-26', 'brand' => 'Kemangi', 'nominal' => 2200000],
+            ['tanggal' => '2025-08-26', 'brand' => 'Art Coffee', 'nominal' => 800000],
         ];
 
         foreach ($transaksiData as $data) {

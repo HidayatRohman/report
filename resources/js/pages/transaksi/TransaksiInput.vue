@@ -49,7 +49,7 @@
               <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal Hari Ini</p>
                     <p class="text-xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(totalNominal) }}</p>
                   </div>
                   <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
@@ -184,6 +184,12 @@ const activeBrandList = computed(() => {
 
 // Check for flash message when component mounts
 onMounted(() => {
+  // Normalize nominal values to numbers
+  daftarTransaksi.value = daftarTransaksi.value.map(item => ({
+    ...item,
+    nominal: typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal
+  }));
+
   const flashMessage = (page.props.flash as any)?.success;
   if (flashMessage) {
     showSuccessNotification(flashMessage as string);
@@ -205,7 +211,13 @@ function hideNotification() {
 }
 
 const totalNominal = computed(() => {
-  return daftarTransaksi.value.reduce((total, item) => total + item.nominal, 0);
+  const today = new Date().toISOString().split('T')[0];
+  return daftarTransaksi.value
+    .filter(item => item.tanggal === today)
+    .reduce((total, item) => {
+      const nominal = typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal;
+      return total + (isNaN(nominal) ? 0 : nominal);
+    }, 0);
 });
 
 const transaksiHariIni = computed(() => {
