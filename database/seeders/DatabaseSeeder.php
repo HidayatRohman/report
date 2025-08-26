@@ -38,5 +38,8 @@ class DatabaseSeeder extends Seeder
             'password' => $defaultPassword,
             'role' => 'karyawan',
         ]);
+
+        // Seeder untuk transaksi
+        $this->call(TransaksiSeeder::class);
     }
 }
