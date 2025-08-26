@@ -12,11 +12,16 @@
       </div>
     </div>
     
-    <div class="h-96 relative">
-      <canvas ref="chartCanvas"></canvas>
+    <div class="h-96">
+      <apexchart
+        type="bar"
+        height="100%"
+        :options="chartOptions"
+        :series="chartSeries"
+      />
     </div>
     
-    <!-- Legend dan Summary -->
+    <!-- Summary Cards -->
     <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
       <div v-for="(brand, index) in brandSummary" :key="brand.name" 
            class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -35,31 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import {
-  Chart,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  type ChartConfiguration
-} from 'chart.js';
-
-// Register Chart.js components
-Chart.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ref, computed, onMounted, watch } from 'vue';
 
 interface TransactionData {
   tanggal: string;
@@ -67,8 +48,6 @@ interface TransactionData {
   nominal: number;
 }
 
-const chartCanvas = ref<HTMLCanvasElement>();
-const chart = ref<Chart>();
 const selectedYear = ref(new Date().getFullYear());
 const daftarTransaksi = ref<TransactionData[]>([]);
 
@@ -84,6 +63,12 @@ const chartColors = [
   '#84CC16', // Lime
 ];
 
+// Month names in Indonesian
+const monthNames = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+  'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+];
+
 // Available years computed from transaction data
 const availableYears = computed(() => {
   const years = new Set<number>();
@@ -91,7 +76,8 @@ const availableYears = computed(() => {
     const year = new Date(transaction.tanggal).getFullYear();
     years.add(year);
   });
-  return Array.from(years).sort((a, b) => b - a);
+  const yearArray = Array.from(years).sort((a, b) => b - a);
+  return yearArray.length > 0 ? yearArray : [new Date().getFullYear()];
 });
 
 // Brand summary statistics
@@ -116,21 +102,123 @@ const brandSummary = computed(() => {
   }));
 });
 
-// Month names in Indonesian
-const monthNames = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-  'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
-];
+// Chart series data
+const chartSeries = computed(() => {
+  const brands = Array.from(new Set(daftarTransaksi.value.map(t => t.brand)));
+  
+  return brands.map((brand, index) => {
+    const monthlyData = new Array(12).fill(0);
+    
+    daftarTransaksi.value
+      .filter(transaction => 
+        transaction.brand === brand && 
+        new Date(transaction.tanggal).getFullYear() === selectedYear.value
+      )
+      .forEach(transaction => {
+        const month = new Date(transaction.tanggal).getMonth();
+        monthlyData[month] += transaction.nominal;
+      });
+    
+    return {
+      name: brand,
+      data: monthlyData,
+      color: chartColors[index % chartColors.length]
+    };
+  });
+});
+
+// Chart options
+const chartOptions = computed(() => ({
+  chart: {
+    type: 'bar',
+    height: '100%',
+    toolbar: {
+      show: true,
+      tools: {
+        download: true,
+        selection: false,
+        zoom: false,
+        zoomin: false,
+        zoomout: false,
+        pan: false,
+        reset: false
+      }
+    },
+    background: 'transparent'
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '55%',
+      borderRadius: 4,
+      dataLabels: {
+        position: 'top'
+      }
+    }
+  },
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    show: true,
+    width: 2,
+    colors: ['transparent']
+  },
+  xaxis: {
+    categories: monthNames,
+    labels: {
+      style: {
+        colors: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151'
+      }
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'Pendapatan (Rupiah)',
+      style: {
+        color: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151'
+      }
+    },
+    labels: {
+      style: {
+        colors: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151'
+      },
+      formatter: function (value: number) {
+        return formatRupiah(value);
+      }
+    }
+  },
+  fill: {
+    opacity: 0.8
+  },
+  tooltip: {
+    theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+    y: {
+      formatter: function (val: number) {
+        return formatRupiah(val);
+      }
+    }
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'center',
+    labels: {
+      colors: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151'
+    }
+  },
+  grid: {
+    borderColor: document.documentElement.classList.contains('dark') ? '#374151' : '#E5E7EB',
+    strokeDashArray: 3
+  }
+}));
 
 onMounted(() => {
   loadTransactionData();
-  initChart();
 });
 
-onUnmounted(() => {
-  if (chart.value) {
-    chart.value.destroy();
-  }
+// Watch for year changes
+watch(selectedYear, () => {
+  updateChart();
 });
 
 function loadTransactionData() {
@@ -180,120 +268,8 @@ function generateSampleData() {
   localStorage.setItem('daftarTransaksi', JSON.stringify(sampleData));
 }
 
-function initChart() {
-  if (!chartCanvas.value) return;
-  
-  const ctx = chartCanvas.value.getContext('2d');
-  if (!ctx) return;
-  
-  const config: ChartConfiguration = {
-    type: 'bar',
-    data: {
-      labels: monthNames,
-      datasets: []
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        title: {
-          display: false
-        },
-        legend: {
-          position: 'top',
-          labels: {
-            color: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151',
-            usePointStyle: true,
-            pointStyle: 'rect'
-          }
-        },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            label: (context) => {
-              const label = context.dataset.label || '';
-              const value = formatRupiah(context.parsed.y);
-              return `${label}: ${value}`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          display: true,
-          title: {
-            display: true,
-            text: 'Bulan',
-            color: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151'
-          },
-          grid: {
-            color: document.documentElement.classList.contains('dark') ? '#374151' : '#E5E7EB'
-          },
-          ticks: {
-            color: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151'
-          }
-        },
-        y: {
-          display: true,
-          title: {
-            display: true,
-            text: 'Pendapatan (Rupiah)',
-            color: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151'
-          },
-          grid: {
-            color: document.documentElement.classList.contains('dark') ? '#374151' : '#E5E7EB'
-          },
-          ticks: {
-            color: document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#374151',
-            callback: function(value) {
-              return formatRupiah(value as number);
-            }
-          }
-        }
-      },
-      interaction: {
-        mode: 'index',
-        intersect: false,
-      }
-    }
-  };
-  
-  chart.value = new Chart(ctx, config);
-  updateChart();
-}
-
 function updateChart() {
-  if (!chart.value) return;
-  
-  // Get unique brands
-  const brands = Array.from(new Set(daftarTransaksi.value.map(t => t.brand)));
-  
-  // Process data for selected year
-  const datasets = brands.map((brand, index) => {
-    const monthlyData = new Array(12).fill(0);
-    
-    daftarTransaksi.value
-      .filter(transaction => 
-        transaction.brand === brand && 
-        new Date(transaction.tanggal).getFullYear() === selectedYear.value
-      )
-      .forEach(transaction => {
-        const month = new Date(transaction.tanggal).getMonth();
-        monthlyData[month] += transaction.nominal;
-      });
-    
-    return {
-      label: brand,
-      data: monthlyData,
-      backgroundColor: chartColors[index % chartColors.length],
-      borderColor: chartColors[index % chartColors.length],
-      borderWidth: 1
-    };
-  });
-  
-  chart.value.data.datasets = datasets;
-  chart.value.update();
+  // Chart will automatically update due to computed properties
 }
 
 function formatRupiah(amount: number): string {
