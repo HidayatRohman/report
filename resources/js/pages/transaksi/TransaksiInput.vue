@@ -2,71 +2,73 @@
   <AppLayout :breadcrumbs="[{ title: 'Input Transaksi', href: '/transaksi-input' }]">
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
       <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div class="relative h-[300px] overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border col-span-3">
-          <div class="p-8">
-            <div class="flex items-center justify-between mb-6">
+        <div class="relative h-auto md:h-[300px] overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border col-span-3">
+          <div class="p-4 md:p-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
               <div>
-                <h1 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Input Transaksi</h1>
+                <h1 class="text-xl md:text-2xl font-bold mb-2 text-gray-900 dark:text-white">Input Transaksi</h1>
                 <p class="text-gray-600 dark:text-gray-300">Kelola transaksi harian brand Anda</p>
               </div>
-              <div class="flex gap-3">
+              <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button 
                   @click="triggerCsvImport" 
-                  class="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium hover:from-green-700 hover:to-emerald-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                  class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium hover:from-green-700 hover:to-emerald-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
                   </svg>
-                  Import CSV
+                  <span class="hidden sm:inline">Import CSV</span>
+                  <span class="sm:hidden">Import</span>
                 </button>
                 <button 
                   @click="openDialog" 
-                  class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                  class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                   </svg>
-                  Tambah Transaksi
+                  <span class="hidden sm:inline">Tambah Transaksi</span>
+                  <span class="sm:hidden">Tambah</span>
                 </button>
               </div>
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-green-500">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-green-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Transaksi</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ daftarTransaksi.length }}</p>
+                    <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-300">Total Transaksi</p>
+                    <p class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">{{ daftarTransaksi.length }}</p>
                   </div>
                   <div class="p-2 bg-green-100 dark:bg-green-800 rounded-full">
-                    <svg class="w-5 h-5 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                     </svg>
                   </div>
                 </div>
               </div>
-              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-blue-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(totalNominal) }}</p>
+                    <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal</p>
+                    <p class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(totalNominal) }}</p>
                   </div>
                   <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
-                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
                     </svg>
                   </div>
                 </div>
               </div>
-              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-purple-500 sm:col-span-2 lg:col-span-1">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Transaksi</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ transaksiHariIni.length }}</p>
+                    <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-300">Transaksi Hari Ini</p>
+                    <p class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">{{ transaksiHariIni.length }}</p>
                   </div>
                   <div class="p-2 bg-purple-100 dark:bg-purple-800 rounded-full">
-                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 md:w-5 md:h-5 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                   </div>
@@ -77,50 +79,84 @@
         </div>
       </div>
       
-      <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white dark:bg-gray-800 p-8 mt-4">
-        <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Transaksi</h2>
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr>
-              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Tanggal</th>
-              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Brand</th>
-              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Nominal</th>
-              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, idx) in paginatedTransaksi" :key="idx" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-              <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatTanggal(item.tanggal) }}</td>
-              <td class="py-2 text-gray-900 dark:text-gray-100">{{ item.brand }}</td>
-              <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatRupiah(item.nominal) }}</td>
-              <td class="py-2">
-                <button @click="editTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500">Edit</button>
-                <button @click="deleteTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2">Hapus</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-if="daftarTransaksi.length === 0" class="text-gray-500 dark:text-gray-400 mt-4">Belum ada data transaksi.</div>
+      <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white dark:bg-gray-800 p-4 md:p-8 mt-4">
+        <h2 class="text-lg md:text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Transaksi</h2>
+        
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr>
+                <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Tanggal</th>
+                <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Brand</th>
+                <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Nominal</th>
+                <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in paginatedTransaksi" :key="idx" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatTanggal(item.tanggal) }}</td>
+                <td class="py-2 text-gray-900 dark:text-gray-100">{{ item.brand }}</td>
+                <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatRupiah(item.nominal) }}</td>
+                <td class="py-2">
+                  <button @click="editTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-sm">Edit</button>
+                  <button @click="deleteTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2 text-sm">Hapus</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden space-y-3">
+          <div v-for="(item, idx) in paginatedTransaksi" :key="idx" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ item.brand }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatTanggal(item.tanggal) }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ formatRupiah(item.nominal) }}</p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button @click="editTransaksi(getActualIndex(idx))" class="flex-1 px-3 py-2 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-xs font-medium">
+                Edit
+              </button>
+              <button @click="deleteTransaksi(getActualIndex(idx))" class="flex-1 px-3 py-2 rounded bg-red-500 text-white hover:bg-red-600 text-xs font-medium">
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div v-if="daftarTransaksi.length === 0" class="text-gray-500 dark:text-gray-400 mt-4 text-center py-8">
+          <svg class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Belum ada data transaksi.
+        </div>
         
         <!-- Pagination -->
-        <div v-if="showPagination" class="flex items-center justify-between mt-6 border-t pt-4 border-gray-200 dark:border-gray-600">
-          <div class="text-sm text-gray-500 dark:text-gray-400">
+        <div v-if="showPagination" class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 border-t pt-4 border-gray-200 dark:border-gray-600 gap-4">
+          <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">
             Menampilkan {{ ((currentPage - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage * itemsPerPage, daftarTransaksi.length) }} dari {{ daftarTransaksi.length }} transaksi
           </div>
           
-          <div class="flex items-center space-x-1">
+          <div class="flex items-center justify-center space-x-1">
             <!-- Previous Button -->
             <button 
               @click="prevPage" 
               :disabled="currentPage === 1"
               :class="[
-                'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                'px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors',
                 currentPage === 1 
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' 
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700'
               ]"
             >
-              ‹ Previous
+              <span class="hidden sm:inline">‹ Previous</span>
+              <span class="sm:hidden">‹</span>
             </button>
             
             <!-- Page Numbers -->
@@ -129,7 +165,7 @@
                 v-if="page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)"
                 @click="goToPage(page)"
                 :class="[
-                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors min-w-[32px] sm:min-w-[36px]',
                   page === currentPage 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700'
@@ -139,7 +175,7 @@
               </button>
               <span 
                 v-else-if="page === currentPage - 2 || page === currentPage + 2" 
-                class="px-2 py-2 text-gray-500 dark:text-gray-400"
+                class="px-1 sm:px-2 py-2 text-gray-500 dark:text-gray-400 text-xs sm:text-sm"
               >
                 ...
               </span>
@@ -150,13 +186,14 @@
               @click="nextPage" 
               :disabled="currentPage === totalPages"
               :class="[
-                'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                'px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors',
                 currentPage === totalPages 
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' 
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700'
               ]"
             >
-              Next ›
+              <span class="hidden sm:inline">Next ›</span>
+              <span class="sm:hidden">›</span>
             </button>
           </div>
         </div>
@@ -173,14 +210,14 @@
       />
 
       <!-- Success Notification -->
-      <div v-if="showNotification" class="fixed top-4 right-4 z-50 transform transition-all duration-300">
-        <div class="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
-          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-if="showNotification" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-auto z-50 transform transition-all duration-300">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 sm:px-6 py-3 sm:py-4 rounded-lg shadow-lg flex items-center gap-3">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <span class="font-medium">{{ notificationMessage }}</span>
-          <button @click="hideNotification" class="ml-2 text-green-700 hover:text-green-900">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <span class="font-medium text-sm sm:text-base flex-1">{{ notificationMessage }}</span>
+          <button @click="hideNotification" class="ml-2 text-green-700 hover:text-green-900 flex-shrink-0">
+            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
