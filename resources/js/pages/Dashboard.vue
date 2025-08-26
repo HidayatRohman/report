@@ -6,6 +6,26 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
 
+interface Brand {
+  id: number;
+  nama_brand: string;
+  pemilik: string;
+}
+
+interface Transaksi {
+  id?: number;
+  tanggal: string;
+  brand: string;
+  nominal: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+const props = defineProps<{
+  brands?: Brand[];
+  transaksis?: Transaksi[];
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -13,9 +33,22 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-// Data refs
-const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: string | null }>>([]);
-const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>([]);
+// Data refs - initialize with props data
+const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: string | null }>>(
+  (props.brands || []).map(brand => ({
+    namaBrand: brand.nama_brand,
+    namaCV: brand.pemilik,
+    logoUrl: null
+  }))
+);
+
+const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>(
+  (props.transaksis || []).map(transaksi => ({
+    tanggal: transaksi.tanggal,
+    brand: transaksi.brand,
+    nominal: typeof transaksi.nominal === 'string' ? parseFloat(transaksi.nominal) : transaksi.nominal
+  }))
+);
 
 // Filter refs
 const selectedBrand = ref('all');
@@ -34,7 +67,12 @@ const totalNominal = computed(() => {
 
 const transaksiHariIni = computed(() => {
   const today = new Date().toISOString().split('T')[0];
-  return daftarTransaksi.value.filter(item => item.tanggal === today).length;
+  return daftarTransaksi.value
+    .filter(item => item.tanggal === today)
+    .reduce((total, item) => {
+      const nominal = typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal;
+      return total + (isNaN(nominal) ? 0 : nominal);
+    }, 0);
 });
 
 const recentTransaksi = computed(() => {
@@ -73,34 +111,37 @@ const filteredTotalNominal = computed(() => {
   }, 0);
 });
 
-// Load data from localStorage
+// Load data from localStorage (fallback only)
 onMounted(() => {
-  // Load brand data
-  const savedBrands = localStorage.getItem('daftarBrand');
-  if (savedBrands) {
-    try {
-      daftarBrand.value = JSON.parse(savedBrands);
-    } catch (e) {
-      console.error('Error parsing saved brands:', e);
+  // If no data from props, try localStorage as fallback
+  if (daftarBrand.value.length === 0) {
+    const savedBrands = localStorage.getItem('daftarBrand');
+    if (savedBrands) {
+      try {
+        daftarBrand.value = JSON.parse(savedBrands);
+      } catch (e) {
+        console.error('Error parsing saved brands:', e);
+      }
     }
   }
 
-  // Load transaction data (simulate from seeded data or localStorage)
-  const savedTransaksi = localStorage.getItem('daftarTransaksi');
-  if (savedTransaksi) {
-    try {
-      const parsedTransaksi = JSON.parse(savedTransaksi);
-      // Normalize nominal values to numbers
-      daftarTransaksi.value = parsedTransaksi.map((item: any) => ({
-        ...item,
-        nominal: typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal
-      }));
-    } catch (e) {
-      console.error('Error parsing saved transactions:', e);
+  if (daftarTransaksi.value.length === 0) {
+    const savedTransaksi = localStorage.getItem('daftarTransaksi');
+    if (savedTransaksi) {
+      try {
+        const parsedTransaksi = JSON.parse(savedTransaksi);
+        // Normalize nominal values to numbers
+        daftarTransaksi.value = parsedTransaksi.map((item: any) => ({
+          ...item,
+          nominal: typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal
+        }));
+      } catch (e) {
+        console.error('Error parsing saved transactions:', e);
+      }
+    } else {
+      // Generate sample data if no data exists
+      generateSampleData();
     }
-  } else {
-    // Generate sample data if no data exists
-    generateSampleData();
   }
 });
 
@@ -422,9 +463,7 @@ function generateReport() {
             </div>
 
             <!-- Revenue Chart -->
-            <RevenueChart :transaksi-data="filteredTransaksi" />
-
-            <!-- Brand Overview -->
+            <RevenueChart :transaksi-data="filteredTransaksi" />            <!-- Brand Overview -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Brand Terdaftar</h3>

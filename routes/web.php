@@ -11,7 +11,13 @@ Route::get('/', function () {
 
 
 Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
+    $brands = \App\Models\Brand::all(['id', 'nama_brand', 'pemilik']);
+    $transaksis = \App\Models\Transaksi::orderBy('tanggal', 'desc')->get();
+    
+    return Inertia::render('Dashboard', [
+        'brands' => $brands,
+        'transaksis' => $transaksis
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Brand routes
