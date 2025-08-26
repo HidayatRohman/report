@@ -17,6 +17,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: string | null }>>([]);
 const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>([]);
 
+// Filter refs
+const selectedBrand = ref('all');
+const startDate = ref('');
+const endDate = ref('');
+
 // Computed properties
 const totalBrand = computed(() => daftarBrand.value.length);
 const totalTransaksi = computed(() => daftarTransaksi.value.length);
@@ -33,9 +38,39 @@ const transaksiHariIni = computed(() => {
 });
 
 const recentTransaksi = computed(() => {
-  return daftarTransaksi.value
+  return filteredTransaksi.value
     .sort((a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime())
     .slice(0, 5);
+});
+
+// Filtered data computed property
+const filteredTransaksi = computed(() => {
+  let filtered = daftarTransaksi.value;
+
+  // Filter by brand
+  if (selectedBrand.value !== 'all') {
+    filtered = filtered.filter(item => item.brand === selectedBrand.value);
+  }
+
+  // Filter by date range
+  if (startDate.value) {
+    filtered = filtered.filter(item => item.tanggal >= startDate.value);
+  }
+
+  if (endDate.value) {
+    filtered = filtered.filter(item => item.tanggal <= endDate.value);
+  }
+
+  return filtered;
+});
+
+// Update computed properties to use filtered data
+const filteredTotalTransaksi = computed(() => filteredTransaksi.value.length);
+const filteredTotalNominal = computed(() => {
+  return filteredTransaksi.value.reduce((total, item) => {
+    const nominal = typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal;
+    return total + (isNaN(nominal) ? 0 : nominal);
+  }, 0);
 });
 
 // Load data from localStorage
@@ -83,6 +118,13 @@ function formatTanggal(tanggal: string): string {
     month: 'short',
     year: 'numeric'
   });
+}
+
+// Filter functions
+function clearFilters() {
+  selectedBrand.value = 'all';
+  startDate.value = '';
+  endDate.value = '';
 }
 
 function generateSampleData() {
@@ -139,6 +181,90 @@ function generateReport() {
                 </div>
             </div>
 
+            <!-- Filter Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-end justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filter Transaksi</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Brand Filter -->
+                            <div>
+                                <label for="brand-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Brand
+                                </label>
+                                <select 
+                                    id="brand-filter"
+                                    v-model="selectedBrand" 
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                >
+                                    <option value="all">Semua Brand</option>
+                                    <option v-for="brand in daftarBrand" :key="brand.namaBrand" :value="brand.namaBrand">
+                                        {{ brand.namaBrand }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Start Date Filter -->
+                            <div>
+                                <label for="start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Tanggal Mulai
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="start-date"
+                                    v-model="startDate"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                />
+                            </div>
+
+                            <!-- End Date Filter -->
+                            <div>
+                                <label for="end-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Tanggal Selesai
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="end-date"
+                                    v-model="endDate"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filter Button -->
+                    <div class="flex gap-2">
+                        <button 
+                            @click="clearFilters"
+                            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Reset Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Results Info -->
+                <div v-if="selectedBrand !== 'all' || startDate || endDate" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm font-medium">
+                            Menampilkan {{ filteredTotalTransaksi }} dari {{ totalTransaksi }} transaksi
+                            <span v-if="selectedBrand !== 'all'"> untuk brand "{{ selectedBrand }}"</span>
+                            <span v-if="startDate || endDate">
+                                <span v-if="startDate && endDate"> dari {{ formatTanggal(startDate) }} sampai {{ formatTanggal(endDate) }}</span>
+                                <span v-else-if="startDate"> dari {{ formatTanggal(startDate) }}</span>
+                                <span v-else-if="endDate"> sampai {{ formatTanggal(endDate) }}</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Stats Overview -->
             <div class="grid auto-rows-min gap-4 md:grid-cols-4">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
@@ -159,9 +285,13 @@ function generateReport() {
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-green-500">
                     <div class="flex items-center">
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Transaksi</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ totalTransaksi }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Semua transaksi</p>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                {{ selectedBrand !== 'all' || startDate || endDate ? 'Transaksi (Filtered)' : 'Total Transaksi' }}
+                            </p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ filteredTotalTransaksi }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {{ selectedBrand !== 'all' || startDate || endDate ? 'Hasil filter' : 'Semua transaksi' }}
+                            </p>
                         </div>
                         <div class="p-3 bg-green-100 dark:bg-green-800 rounded-full">
                             <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,9 +304,13 @@ function generateReport() {
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
                     <div class="flex items-center">
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(totalNominal) }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Keseluruhan</p>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                {{ selectedBrand !== 'all' || startDate || endDate ? 'Total Nominal (Filtered)' : 'Total Nominal' }}
+                            </p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(filteredTotalNominal) }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {{ selectedBrand !== 'all' || startDate || endDate ? 'Hasil filter' : 'Keseluruhan' }}
+                            </p>
                         </div>
                         <div class="p-3 bg-purple-100 dark:bg-purple-800 rounded-full">
                             <svg class="w-6 h-6 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,7 +422,7 @@ function generateReport() {
             </div>
 
             <!-- Revenue Chart -->
-            <RevenueChart />
+            <RevenueChart :transaksi-data="filteredTransaksi" />
 
             <!-- Brand Overview -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">

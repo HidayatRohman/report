@@ -48,8 +48,12 @@ interface TransactionData {
   nominal: number;
 }
 
+const props = defineProps<{
+  transaksiData?: TransactionData[];
+}>();
+
 const selectedYear = ref(new Date().getFullYear());
-const daftarTransaksi = ref<TransactionData[]>([]);
+const daftarTransaksi = ref<TransactionData[]>(props.transaksiData || []);
 
 // Chart colors for different brands
 const chartColors = [
@@ -223,7 +227,21 @@ watch(selectedYear, () => {
   updateChart();
 });
 
+// Watch for props changes
+watch(() => props.transaksiData, (newData) => {
+  if (newData) {
+    daftarTransaksi.value = newData;
+    updateChart();
+  }
+}, { deep: true });
+
 function loadTransactionData() {
+  // Use props data if available, otherwise load from localStorage
+  if (props.transaksiData && props.transaksiData.length > 0) {
+    daftarTransaksi.value = props.transaksiData;
+    return;
+  }
+  
   // Load transaction data from localStorage
   const savedTransaksi = localStorage.getItem('daftarTransaksi');
   if (savedTransaksi) {
