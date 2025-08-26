@@ -1,15 +1,42 @@
 <template>
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
     <div class="flex items-center justify-between mb-6">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pendapatan Bulanan per Brand</h3>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          {{ chartTitle }}
+        </h3>
+        <p v-if="isFiltered" class="text-sm text-blue-600 dark:text-blue-400 mt-1">
+          {{ filterDescription }}
+        </p>
+      </div>
       <div class="flex items-center gap-2">
         <select 
+          v-model="viewType" 
+          @change="updateChart"
+          class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        >
+          <option value="period">Berdasarkan Periode</option>
+          <option value="year">Berdasarkan Tahun</option>
+        </select>
+        
+        <select 
+          v-if="viewType === 'period'"
           v-model="selectedPeriod" 
+          @change="updateChart"
           class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
           <option value="3">3 Bulan Terakhir</option>
           <option value="6">6 Bulan Terakhir</option>
           <option value="12">12 Bulan Terakhir</option>
+        </select>
+        
+        <select 
+          v-if="viewType === 'year'"
+          v-model="selectedYear" 
+          @change="updateChart"
+          class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        >
+          <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
         </select>
       </div>
     </div>
@@ -75,10 +102,15 @@ interface ChartData {
 const props = defineProps<{
   transaksiData: TransaksiData[];
   brandList: Brand[];
+  selectedBrand?: string;
+  startDate?: string;
+  endDate?: string;
 }>();
 
 const chartContainer = ref<HTMLElement>();
 const selectedPeriod = ref(6);
+const viewType = ref<'period' | 'year'>('period');
+const selectedYear = ref<number>(new Date().getFullYear());
 let chartInstance: any = null;
 
 // Brand colors
@@ -87,17 +119,39 @@ const brandColors = [
   '#06B6D4', '#F97316', '#84CC16', '#EC4899', '#6B7280'
 ];
 
+// Available years from transaction data
+const availableYears = computed(() => {
+  if (!props.transaksiData.length) return [new Date().getFullYear()];
+  
+  const years = [...new Set(props.transaksiData.map(t => {
+    const date = new Date(t.tanggal);
+    return date.getFullYear();
+  }))].sort((a, b) => b - a);
+  
+  return years;
+});
+
 const chartData = computed((): ChartData | null => {
   if (!props.transaksiData.length) return null;
 
-  const now = new Date();
-  const monthsAgo = new Date(now.getFullYear(), now.getMonth() - selectedPeriod.value, 1);
+  let filteredTransaksi = props.transaksiData;
   
-  // Filter transaksi dalam periode yang dipilih
-  const filteredTransaksi = props.transaksiData.filter(t => {
-    const transaksiDate = new Date(t.tanggal);
-    return transaksiDate >= monthsAgo && transaksiDate <= now;
-  });
+  // Apply filtering based on view type
+  if (viewType.value === 'period') {
+    // Filter by months ago from current date
+    const now = new Date();
+    const monthsAgo = new Date(now.getFullYear(), now.getMonth() - selectedPeriod.value, 1);
+    filteredTransaksi = props.transaksiData.filter(t => {
+      const transaksiDate = new Date(t.tanggal);
+      return transaksiDate >= monthsAgo && transaksiDate <= now;
+    });
+  } else {
+    // Filter by selected year
+    filteredTransaksi = props.transaksiData.filter(t => {
+      const transaksiDate = new Date(t.tanggal);
+      return transaksiDate.getFullYear() === selectedYear.value;
+    });
+  }
 
   // Group by month and brand
   const groupedData: { [key: string]: { [brand: string]: number } } = {};
@@ -132,13 +186,22 @@ const chartData = computed((): ChartData | null => {
 const brandSummary = computed(() => {
   if (!props.transaksiData.length) return [];
 
-  const now = new Date();
-  const monthsAgo = new Date(now.getFullYear(), now.getMonth() - selectedPeriod.value, 1);
+  let filteredTransaksi = props.transaksiData;
   
-  const filteredTransaksi = props.transaksiData.filter(t => {
-    const transaksiDate = new Date(t.tanggal);
-    return transaksiDate >= monthsAgo && transaksiDate <= now;
-  });
+  // Apply same filtering as chartData
+  if (viewType.value === 'period') {
+    const now = new Date();
+    const monthsAgo = new Date(now.getFullYear(), now.getMonth() - selectedPeriod.value, 1);
+    filteredTransaksi = props.transaksiData.filter(t => {
+      const transaksiDate = new Date(t.tanggal);
+      return transaksiDate >= monthsAgo && transaksiDate <= now;
+    });
+  } else {
+    filteredTransaksi = props.transaksiData.filter(t => {
+      const transaksiDate = new Date(t.tanggal);
+      return transaksiDate.getFullYear() === selectedYear.value;
+    });
+  }
 
   const brandTotals: { [brand: string]: { total: number; count: number } } = {};
   
@@ -164,6 +227,33 @@ const brandSummary = computed(() => {
 
 const hasData = computed(() => {
   return chartData.value && chartData.value.months.length > 0;
+});
+
+// Computed properties for filter information
+const isFiltered = computed(() => {
+  return props.selectedBrand && props.selectedBrand !== 'all' || props.startDate || props.endDate;
+});
+
+const chartTitle = computed(() => {
+  if (isFiltered.value && props.selectedBrand && props.selectedBrand !== 'all') {
+    return `Pendapatan Bulanan - ${props.selectedBrand}`;
+  }
+  return 'Pendapatan Bulanan per Brand';
+});
+
+const filterDescription = computed(() => {
+  const filters = [];
+  if (props.selectedBrand && props.selectedBrand !== 'all') {
+    filters.push(`Brand: ${props.selectedBrand}`);
+  }
+  if (props.startDate && props.endDate) {
+    filters.push(`Periode: ${props.startDate} - ${props.endDate}`);
+  } else if (props.startDate) {
+    filters.push(`Dari: ${props.startDate}`);
+  } else if (props.endDate) {
+    filters.push(`Sampai: ${props.endDate}`);
+  }
+  return filters.join(' | ');
 });
 
 const formatRupiah = (amount: number): string => {
@@ -294,12 +384,24 @@ const renderChart = async () => {
   }
 };
 
-watch([() => props.transaksiData, selectedPeriod], async () => {
+const updateChart = async () => {
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
   await nextTick();
   renderChart();
+};
+
+watch([() => props.transaksiData, selectedPeriod, viewType, selectedYear], async () => {
+  updateChart();
 }, { deep: true });
 
 onMounted(async () => {
+  // Set initial selectedYear to the most recent year from data
+  if (availableYears.value.length > 0) {
+    selectedYear.value = availableYears.value[0];
+  }
   await nextTick();
   renderChart();
 });
