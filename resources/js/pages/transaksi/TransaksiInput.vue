@@ -211,18 +211,14 @@ function hideNotification() {
 }
 
 const totalNominal = computed(() => {
-  const today = new Date().toISOString().split('T')[0];
-  return daftarTransaksi.value
-    .filter(item => item.tanggal === today)
-    .reduce((total, item) => {
-      const nominal = typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal;
-      return total + (isNaN(nominal) ? 0 : nominal);
-    }, 0);
+  return daftarTransaksi.value.reduce((total, item) => {
+    const nominal = typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal;
+    return total + (isNaN(nominal) ? 0 : nominal);
+  }, 0);
 });
 
 const transaksiHariIni = computed(() => {
-  const today = new Date().toISOString().split('T')[0];
-  return daftarTransaksi.value.filter(item => item.tanggal === today);
+  return daftarTransaksi.value;
 });
 
 function openDialog() {

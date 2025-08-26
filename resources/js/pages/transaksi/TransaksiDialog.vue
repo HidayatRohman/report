@@ -97,12 +97,30 @@ const form = ref({
 });
 
 watch(() => props.transaksi, (val) => {
-  if (val) form.value = { ...val };
-  else form.value = { 
-    tanggal: new Date().toISOString().split('T')[0], 
-    brand: '', 
-    nominal: 0 
-  };
+  if (val) {
+    // Format tanggal untuk input date (YYYY-MM-DD)
+    let formattedDate = val.tanggal;
+    
+    // Handle different date formats
+    if (formattedDate.includes('T')) {
+      // ISO format: 2025-08-26T00:00:00.000Z
+      formattedDate = formattedDate.split('T')[0];
+    } else if (formattedDate.includes(' ')) {
+      // SQL datetime format: 2025-08-26 00:00:00
+      formattedDate = formattedDate.split(' ')[0];
+    }
+    
+    form.value = { 
+      ...val,
+      tanggal: formattedDate
+    };
+  } else {
+    form.value = { 
+      tanggal: new Date().toISOString().split('T')[0], 
+      brand: '', 
+      nominal: 0 
+    };
+  }
 }, { immediate: true });
 
 function handleSubmit() {
