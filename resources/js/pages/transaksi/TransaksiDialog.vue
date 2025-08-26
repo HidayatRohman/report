@@ -26,17 +26,44 @@
         <!-- Brand -->
         <div class="space-y-2">
           <label for="brand" class="block text-sm font-semibold text-gray-700">Brand</label>
-          <select 
-            id="brand" 
-            v-model="form.brand" 
-            required 
-            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-          >
-            <option value="">Pilih Brand</option>
-            <option v-for="brand in brandList" :key="brand.namaBrand" :value="brand.namaBrand">
-              {{ brand.namaBrand }} - {{ brand.namaCV }}
-            </option>
-          </select>
+          <div class="relative">
+            <select 
+              id="brand" 
+              v-model="form.brand" 
+              required 
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none"
+            >
+              <option value="">Pilih Brand</option>
+              <option v-for="brand in brandList" :key="brand.namaBrand" :value="brand.namaBrand">
+                {{ brand.namaBrand }} - {{ brand.namaCV }}
+              </option>
+            </select>
+            <!-- Dropdown arrow -->
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Selected Brand Preview with Logo -->
+          <div v-if="form.brand && selectedBrandData" class="mt-2 p-3 bg-gray-50 rounded-lg flex items-center gap-3">
+            <div v-if="selectedBrandData.logoPath" class="w-12 h-12 rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+              <img 
+                :src="`/storage/${selectedBrandData.logoPath}`" 
+                :alt="selectedBrandData.namaBrand"
+                class="w-full h-full object-cover"
+                @error="handleImageError"
+              />
+            </div>
+            <div v-else class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+              <span class="text-white font-bold text-lg">{{ selectedBrandData.namaBrand.charAt(0) }}</span>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">{{ selectedBrandData.namaBrand }}</p>
+              <p class="text-sm text-gray-500">{{ selectedBrandData.namaCV }}</p>
+            </div>
+          </div>
         </div>
 
         <!-- Nominal Transaksi -->
@@ -79,13 +106,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from 'vue';
+import { ref, watch, computed, defineProps, defineEmits } from 'vue';
 
 const props = defineProps<{ 
   open: boolean; 
   isEdit?: boolean; 
   transaksi?: { tanggal: string; brand: string; nominal: number };
-  brandList: Array<{ namaBrand: string; namaCV: string }>;
+  brandList: Array<{ namaBrand: string; namaCV: string; logoPath?: string }>;
 }>();
 
 const emit = defineEmits(['submit', 'close']);
@@ -123,6 +150,12 @@ watch(() => props.transaksi, (val) => {
   }
 }, { immediate: true });
 
+// Computed property to get selected brand data
+const selectedBrandData = computed(() => {
+  if (!form.value.brand) return null;
+  return props.brandList.find(brand => brand.namaBrand === form.value.brand);
+});
+
 function handleSubmit() {
   // Ensure nominal is a number
   const submitData = {
@@ -131,5 +164,11 @@ function handleSubmit() {
   };
   emit('submit', submitData);
   emit('close');
+}
+
+function handleImageError(event: Event) {
+  // Hide broken image
+  const img = event.target as HTMLImageElement;
+  img.style.display = 'none';
 }
 </script>

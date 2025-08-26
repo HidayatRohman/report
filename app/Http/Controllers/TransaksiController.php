@@ -15,7 +15,18 @@ class TransaksiController extends Controller
     public function index()
     {
         $transaksis = Transaksi::orderBy('tanggal', 'desc')->get();
-        $brands = Brand::all(['id', 'nama_brand', 'pemilik']);
+        $brands = Brand::all(['id', 'nama_brand', 'pemilik', 'logo_path'])
+            ->map(function ($brand) {
+                return [
+                    'id' => $brand->id,
+                    'nama_brand' => $brand->nama_brand,
+                    'pemilik' => $brand->pemilik,
+                    'logo_path' => $brand->logo_path,
+                    'namaBrand' => $brand->nama_brand,
+                    'namaCV' => $brand->pemilik,
+                    'logoPath' => $brand->logo_path
+                ];
+            });
         
         return Inertia::render('transaksi/TransaksiList', [
             'transaksis' => $transaksis,
@@ -28,7 +39,18 @@ class TransaksiController extends Controller
      */
     public function create()
     {
-        $brands = Brand::all(['id', 'nama_brand', 'pemilik']);
+        $brands = Brand::all(['id', 'nama_brand', 'pemilik', 'logo_path'])
+            ->map(function ($brand) {
+                return [
+                    'id' => $brand->id,
+                    'nama_brand' => $brand->nama_brand,
+                    'pemilik' => $brand->pemilik,
+                    'logo_path' => $brand->logo_path,
+                    'namaBrand' => $brand->nama_brand, // For frontend compatibility
+                    'namaCV' => $brand->pemilik, // For frontend compatibility
+                    'logoPath' => $brand->logo_path // For frontend compatibility
+                ];
+            });
         $transaksis = Transaksi::orderBy('tanggal', 'desc')->get();
         
         return Inertia::render('transaksi/TransaksiInput', [

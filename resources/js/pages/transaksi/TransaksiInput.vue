@@ -209,6 +209,10 @@ interface Brand {
   id: number;
   nama_brand: string;
   pemilik: string;
+  logo_path?: string;
+  namaBrand: string; // Transformed field
+  namaCV: string; // Transformed field
+  logoPath?: string; // Transformed field
 }
 
 interface Transaksi {
@@ -239,10 +243,7 @@ const itemsPerPage = 31;
 
 // Transform brands for dialog component
 const activeBrandList = computed(() => {
-  return (props.brands || []).map(brand => ({
-    namaBrand: brand.nama_brand,
-    namaCV: brand.pemilik
-  }));
+  return props.brands || [];
 });
 
 // Check for flash message when component mounts
