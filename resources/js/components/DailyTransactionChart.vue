@@ -26,50 +26,50 @@
     <!-- Chart Container -->
     <div class="relative">
       <div ref="chartContainer" class="w-full h-64 md:h-80"></div>
-      <div v-if="!hasData" class="absolute inset-0 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      <div v-if="!hasData" class="absolute inset-0 flex items-center justify-center text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 rounded-lg border dark:border-gray-600">
         <div class="text-center">
-          <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-12 h-12 mx-auto mb-3 opacity-60 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h2a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
           </svg>
-          <p class="text-sm">Tidak ada data transaksi</p>
+          <p class="text-sm font-medium">Tidak ada data transaksi</p>
         </div>
       </div>
     </div>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-      <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+      <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border dark:border-blue-800/30">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs text-blue-600 dark:text-blue-400 font-medium">Rata-rata Harian</p>
-            <p class="text-sm font-bold text-blue-800 dark:text-blue-300">{{ formatRupiah(averageDaily) }}</p>
+            <p class="text-xs text-blue-700 dark:text-blue-300 font-medium">Rata-rata Harian</p>
+            <p class="text-sm font-bold text-blue-900 dark:text-blue-100">{{ formatRupiah(averageDaily) }}</p>
           </div>
-          <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
           </svg>
         </div>
       </div>
       
-      <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+      <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border dark:border-green-800/30">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs text-green-600 dark:text-green-400 font-medium">Nominal Tertinggi</p>
-            <p class="text-sm font-bold text-green-800 dark:text-green-300">{{ formatRupiah(maxDaily.amount) }}</p>
+            <p class="text-xs text-green-700 dark:text-green-300 font-medium">Nominal Tertinggi</p>
+            <p class="text-sm font-bold text-green-900 dark:text-green-100">{{ formatRupiah(maxDaily.amount) }}</p>
             <p class="text-xs text-green-600 dark:text-green-400">{{ maxDaily.date }}</p>
           </div>
-          <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h2a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
           </svg>
         </div>
       </div>
       
-      <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
+      <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border dark:border-purple-800/30">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs text-purple-600 dark:text-purple-400 font-medium">Total Periode</p>
-            <p class="text-sm font-bold text-purple-800 dark:text-purple-300">{{ formatRupiah(totalPeriod) }}</p>
+            <p class="text-xs text-purple-700 dark:text-purple-300 font-medium">Total Periode</p>
+            <p class="text-sm font-bold text-purple-900 dark:text-purple-100">{{ formatRupiah(totalPeriod) }}</p>
           </div>
-          <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
           </svg>
         </div>
@@ -207,6 +207,9 @@ const formatRupiah = (amount: number): string => {
 }
 
 const getChartOptions = () => {
+  // Detect if dark mode is active
+  const isDarkMode = document.documentElement.classList.contains('dark')
+  
   return {
     chart: {
       type: 'area',
@@ -216,7 +219,11 @@ const getChartOptions = () => {
       },
       zoom: {
         enabled: false
-      }
+      },
+      background: 'transparent'
+    },
+    theme: {
+      mode: isDarkMode ? 'dark' : 'light'
     },
     dataLabels: {
       enabled: false
@@ -233,12 +240,25 @@ const getChartOptions = () => {
       categories: chartData.value.categories,
       labels: {
         style: {
-          fontSize: '12px'
+          fontSize: '12px',
+          colors: isDarkMode ? '#D1D5DB' : '#6B7280',
+          fontFamily: 'Inter, system-ui, sans-serif'
         }
+      },
+      axisBorder: {
+        color: isDarkMode ? '#374151' : '#E5E7EB'
+      },
+      axisTicks: {
+        color: isDarkMode ? '#374151' : '#E5E7EB'
       }
     },
     yaxis: {
       labels: {
+        style: {
+          fontSize: '12px',
+          colors: isDarkMode ? '#D1D5DB' : '#6B7280',
+          fontFamily: 'Inter, system-ui, sans-serif'
+        },
         formatter: (value: number) => {
           return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -261,12 +281,22 @@ const getChartOptions = () => {
     },
     colors: ['#3B82F6'],
     grid: {
-      borderColor: '#E5E7EB',
+      borderColor: isDarkMode ? '#374151' : '#E5E7EB',
       strokeDashArray: 3
     },
     tooltip: {
+      theme: isDarkMode ? 'dark' : 'light',
+      style: {
+        fontSize: '12px',
+        fontFamily: 'Inter, system-ui, sans-serif'
+      },
       y: {
         formatter: (value: number) => formatRupiah(value)
+      }
+    },
+    legend: {
+      labels: {
+        colors: isDarkMode ? '#D1D5DB' : '#6B7280'
       }
     },
     responsive: [{
@@ -277,7 +307,11 @@ const getChartOptions = () => {
         },
         xaxis: {
           labels: {
-            rotate: -45
+            rotate: -45,
+            style: {
+              fontSize: '11px',
+              colors: isDarkMode ? '#D1D5DB' : '#6B7280'
+            }
           }
         }
       }
@@ -313,6 +347,20 @@ const updateChart = async () => {
 // Lifecycle hooks
 onMounted(() => {
   renderChart()
+  
+  // Watch for theme changes
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        updateChart()
+      }
+    })
+  })
+  
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class']
+  })
 })
 
 watch([selectedPeriod, selectedBrand], () => {
