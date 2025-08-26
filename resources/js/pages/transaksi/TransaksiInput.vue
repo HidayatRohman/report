@@ -97,7 +97,7 @@
         :open="dialogOpen" 
         :isEdit="editIdx !== null" 
         :transaksi="editIdx !== null ? daftarTransaksi[editIdx] : undefined"
-        :brandList="brandList"
+        :brandList="activeBrandList"
         @submit="handleDialogSubmit" 
         @close="closeDialog" 
       />
@@ -107,19 +107,35 @@
 
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import TransaksiDialog from './TransaksiDialog.vue';
 
 const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>([]);
 const dialogOpen = ref(false);
 const editIdx = ref<number | null>(null);
 
-// Simulasi data brand (nanti bisa ambil dari API)
+// Simulasi data brand (nanti bisa ambil dari API atau state management)
 const brandList = ref([
   { namaBrand: 'Nike', namaCV: 'CV Sportindo' },
   { namaBrand: 'Adidas', namaCV: 'CV Atletik' },
   { namaBrand: 'Puma', namaCV: 'CV Dinamis' },
 ]);
+
+// Reactive brand list yang bisa diambil dari localStorage atau state management
+const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: string | null }>>([]);
+
+// Update brandList berdasarkan daftarBrand yang ada
+const activeBrandList = computed(() => {
+  // Jika ada data brand yang sudah diinput, gunakan itu
+  if (daftarBrand.value.length > 0) {
+    return daftarBrand.value.map(brand => ({
+      namaBrand: brand.namaBrand,
+      namaCV: brand.namaCV
+    }));
+  }
+  // Fallback ke data simulasi jika belum ada brand yang diinput
+  return brandList.value;
+});
 
 const totalNominal = computed(() => {
   return daftarTransaksi.value.reduce((total, item) => total + item.nominal, 0);
@@ -170,4 +186,16 @@ function formatTanggal(tanggal: string): string {
     year: 'numeric'
   });
 }
+
+// Load brand data dari localStorage jika ada
+onMounted(() => {
+  const savedBrands = localStorage.getItem('daftarBrand');
+  if (savedBrands) {
+    try {
+      daftarBrand.value = JSON.parse(savedBrands);
+    } catch (e) {
+      console.error('Error parsing saved brands:', e);
+    }
+  }
+});
 </script>

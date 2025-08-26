@@ -108,12 +108,24 @@
 </template>
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import BrandDialog from './BrandDialog.vue';
 
 const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: string | null }>>([]);
 const dialogOpen = ref(false);
 const editIdx = ref<number|null>(null);
+
+// Load data dari localStorage saat component di-mount
+onMounted(() => {
+  const savedBrands = localStorage.getItem('daftarBrand');
+  if (savedBrands) {
+    try {
+      daftarBrand.value = JSON.parse(savedBrands);
+    } catch (e) {
+      console.error('Error parsing saved brands:', e);
+    }
+  }
+});
 
 function openDialog() {
   editIdx.value = null;
@@ -130,6 +142,9 @@ function handleDialogSubmit(data: { namaBrand: string; namaCV: string; logo: Fil
   } else {
     daftarBrand.value.push({ ...data, logoUrl });
   }
+  
+  // Simpan ke localStorage agar bisa diakses di halaman transaksi
+  localStorage.setItem('daftarBrand', JSON.stringify(daftarBrand.value));
 }
 function editBrand(idx: number) {
   editIdx.value = idx;
@@ -137,5 +152,7 @@ function editBrand(idx: number) {
 }
 function deleteBrand(idx: number) {
   daftarBrand.value.splice(idx, 1);
+  // Update localStorage setelah hapus
+  localStorage.setItem('daftarBrand', JSON.stringify(daftarBrand.value));
 }
 </script>
