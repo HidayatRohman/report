@@ -16,7 +16,8 @@ class TransaksiFactory extends Factory
      */
     public function definition(): array
     {
-        $brands = ['NYORE COFFEE', 'Nike', 'Adidas', 'Puma', 'Samsung', 'Apple'];
+        // Hanya gunakan brand yang sudah ada di seeder Brand (Nyore Nyante, Kemangi, Art Coffee)
+        $brands = ['Nyore Nyante', 'Kemangi', 'Art Coffee'];
         
         return [
             'tanggal' => $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),

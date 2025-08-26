@@ -113,6 +113,21 @@
         @close="closeDialog" 
       />
 
+      <!-- Success Notification -->
+      <div v-if="showNotification" class="fixed top-4 right-4 z-50 transform transition-all duration-300">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="font-medium">{{ notificationMessage }}</span>
+          <button @click="hideNotification" class="ml-2 text-green-700 hover:text-green-900">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
       <!-- Hidden CSV Input -->
       <input 
         type="file" 
@@ -128,35 +143,66 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { ref, computed, onMounted } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import TransaksiDialog from './TransaksiDialog.vue';
 
-const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>([]);
+interface Brand {
+  id: number;
+  nama_brand: string;
+  pemilik: string;
+}
+
+interface Transaksi {
+  id?: number;
+  tanggal: string;
+  brand: string;
+  nominal: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+const props = defineProps<{
+  brands?: Brand[];
+  transaksis?: Transaksi[];
+}>();
+
+const page = usePage();
+const daftarTransaksi = ref<Transaksi[]>(props.transaksis || []);
 const dialogOpen = ref(false);
 const editIdx = ref<number | null>(null);
 const csvFileInput = ref<HTMLInputElement>();
+const showNotification = ref(false);
+const notificationMessage = ref('');
 
-// Simulasi data brand (nanti bisa ambil dari API atau state management)
-const brandList = ref([
-  { namaBrand: 'Nike', namaCV: 'CV Sportindo' },
-  { namaBrand: 'Adidas', namaCV: 'CV Atletik' },
-  { namaBrand: 'Puma', namaCV: 'CV Dinamis' },
-]);
-
-// Reactive brand list yang bisa diambil dari localStorage atau state management
-const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: string | null }>>([]);
-
-// Update brandList berdasarkan daftarBrand yang ada
+// Transform brands for dialog component
 const activeBrandList = computed(() => {
-  // Jika ada data brand yang sudah diinput, gunakan itu
-  if (daftarBrand.value.length > 0) {
-    return daftarBrand.value.map(brand => ({
-      namaBrand: brand.namaBrand,
-      namaCV: brand.namaCV
-    }));
-  }
-  // Fallback ke data simulasi jika belum ada brand yang diinput
-  return brandList.value;
+  return (props.brands || []).map(brand => ({
+    namaBrand: brand.nama_brand,
+    namaCV: brand.pemilik
+  }));
 });
+
+// Check for flash message when component mounts
+onMounted(() => {
+  const flashMessage = (page.props.flash as any)?.success;
+  if (flashMessage) {
+    showSuccessNotification(flashMessage as string);
+  }
+});
+
+function showSuccessNotification(message: string) {
+  notificationMessage.value = message;
+  showNotification.value = true;
+  // Auto hide after 3 seconds
+  setTimeout(() => {
+    hideNotification();
+  }, 3000);
+}
+
+function hideNotification() {
+  showNotification.value = false;
+  notificationMessage.value = '';
+}
 
 const totalNominal = computed(() => {
   return daftarTransaksi.value.reduce((total, item) => total + item.nominal, 0);
@@ -177,10 +223,45 @@ function closeDialog() {
 }
 
 function handleDialogSubmit(data: { tanggal: string; brand: string; nominal: number }) {
+  const formData = new FormData();
+  formData.append('tanggal', data.tanggal);
+  formData.append('brand', data.brand);
+  formData.append('nominal', data.nominal.toString());
+
   if (editIdx.value !== null) {
-    daftarTransaksi.value[editIdx.value] = { ...data };
+    // Update existing transaksi
+    const transaksi = daftarTransaksi.value[editIdx.value];
+    if (transaksi && transaksi.id) {
+      formData.append('_method', 'PUT');
+      router.post(`/transaksis/${transaksi.id}`, formData, {
+        onSuccess: () => {
+          closeDialog();
+          showSuccessNotification('Transaksi berhasil diperbarui!');
+          // Refresh page to show updated data
+          setTimeout(() => {
+            router.visit('/transaksi-input', { preserveState: false });
+          }, 1000);
+        },
+        onError: () => {
+          showSuccessNotification('Terjadi kesalahan saat memperbarui transaksi.');
+        }
+      });
+    }
   } else {
-    daftarTransaksi.value.push({ ...data });
+    // Create new transaksi
+    router.post('/transaksi-input', formData, {
+      onSuccess: () => {
+        closeDialog();
+        showSuccessNotification('Transaksi berhasil ditambahkan!');
+        // Refresh page to show new data
+        setTimeout(() => {
+          router.visit('/transaksi-input', { preserveState: false });
+        }, 1000);
+      },
+      onError: () => {
+        showSuccessNotification('Terjadi kesalahan saat menambahkan transaksi.');
+      }
+    });
   }
 }
 
@@ -190,7 +271,23 @@ function editTransaksi(idx: number) {
 }
 
 function deleteTransaksi(idx: number) {
-  daftarTransaksi.value.splice(idx, 1);
+  const transaksi = daftarTransaksi.value[idx];
+  if (transaksi && confirm(`Apakah Anda yakin ingin menghapus transaksi ${transaksi.brand} tanggal ${formatTanggal(transaksi.tanggal)}?`)) {
+    if (transaksi.id) {
+      router.delete(`/transaksis/${transaksi.id}`, {
+        onSuccess: () => {
+          showSuccessNotification('Transaksi berhasil dihapus!');
+          // Refresh page to show updated data
+          setTimeout(() => {
+            router.visit('/transaksi-input', { preserveState: false });
+          }, 1000);
+        },
+        onError: () => {
+          showSuccessNotification('Terjadi kesalahan saat menghapus transaksi.');
+        }
+      });
+    }
+  }
 }
 
 function formatRupiah(amount: number): string {
@@ -207,18 +304,6 @@ function formatTanggal(tanggal: string): string {
     year: 'numeric'
   });
 }
-
-// Load brand data dari localStorage jika ada
-onMounted(() => {
-  const savedBrands = localStorage.getItem('daftarBrand');
-  if (savedBrands) {
-    try {
-      daftarBrand.value = JSON.parse(savedBrands);
-    } catch (e) {
-      console.error('Error parsing saved brands:', e);
-    }
-  }
-});
 
 function triggerCsvImport() {
   csvFileInput.value?.click();

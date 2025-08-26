@@ -16,7 +16,7 @@
           <label for="logo" class="block text-sm font-semibold text-gray-700">Logo Brand</label>
           <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition-colors duration-200">
             <input type="file" id="logo" name="logo" @change="handleFileUpload" accept="image/*" class="hidden" ref="fileInput" />
-            <div v-if="!form.logo" @click="$refs.fileInput.click()" class="cursor-pointer">
+            <div v-if="!form.logo && !existingLogoUrl" @click="$refs.fileInput?.click()" class="cursor-pointer">
               <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
               </svg>
@@ -24,20 +24,30 @@
               <p class="text-gray-400 text-sm">PNG, JPG, JPEG (Max: 2MB)</p>
             </div>
             <div v-else class="space-y-3">
-              <img v-if="previewUrl" :src="previewUrl" alt="Preview" class="mx-auto h-20 w-20 object-cover rounded-lg" />
-              <p class="text-sm text-gray-600">{{ form.logo?.name }}</p>
-              <button type="button" @click="removeFile" class="text-red-500 hover:text-red-700 text-sm font-medium">Hapus file</button>
+              <img 
+                v-if="previewUrl || existingLogoUrl" 
+                :src="previewUrl || `/storage/${existingLogoUrl}`" 
+                alt="Preview" 
+                class="mx-auto h-20 w-20 object-cover rounded-lg" 
+              />
+              <p class="text-sm text-gray-600">{{ form.logo?.name || 'Logo saat ini' }}</p>
+              <div class="flex gap-2 justify-center">
+                <button type="button" @click="$refs.fileInput?.click()" class="text-blue-500 hover:text-blue-700 text-sm font-medium">
+                  {{ form.logo ? 'Ganti file' : 'Ganti logo' }}
+                </button>
+                <button type="button" @click="removeFile" class="text-red-500 hover:text-red-700 text-sm font-medium">Hapus</button>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Nama Brand -->
         <div class="space-y-2">
-          <label for="namaBrand" class="block text-sm font-semibold text-gray-700">Nama Brand</label>
+          <label for="nama_brand" class="block text-sm font-semibold text-gray-700">Nama Brand</label>
           <input 
             type="text" 
-            id="namaBrand" 
-            v-model="form.namaBrand" 
+            id="nama_brand" 
+            v-model="form.nama_brand" 
             required 
             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             placeholder="Masukkan nama brand"
@@ -46,15 +56,27 @@
 
         <!-- Nama CV -->
         <div class="space-y-2">
-          <label for="namaCV" class="block text-sm font-semibold text-gray-700">Nama CV</label>
+          <label for="pemilik" class="block text-sm font-semibold text-gray-700">Nama CV</label>
           <input 
             type="text" 
-            id="namaCV" 
-            v-model="form.namaCV" 
+            id="pemilik" 
+            v-model="form.pemilik" 
             required 
             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             placeholder="Masukkan nama CV"
           />
+        </div>
+
+        <!-- Deskripsi -->
+        <div class="space-y-2">
+          <label for="deskripsi" class="block text-sm font-semibold text-gray-700">Deskripsi (Opsional)</label>
+          <textarea 
+            id="deskripsi" 
+            v-model="form.deskripsi" 
+            rows="3"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            placeholder="Masukkan deskripsi brand"
+          ></textarea>
         </div>
 
         <!-- Action Buttons -->
@@ -80,16 +102,31 @@
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits, computed } from 'vue';
 
+interface Brand {
+  id?: number;
+  nama_brand: string;
+  pemilik: string;
+  deskripsi?: string;
+  logo_path?: string;
+}
+
 const props = defineProps<{ 
   open: boolean; 
   isEdit?: boolean; 
-  brand?: { namaBrand: string; namaCV: string; logo: File | null } 
+  brand?: Brand | null;
 }>();
 
 const emit = defineEmits(['submit', 'close']);
 
-const form = ref({ namaBrand: '', namaCV: '', logo: null as File | null });
+const form = ref({ 
+  nama_brand: '', 
+  pemilik: '', 
+  deskripsi: '',
+  logo: null as File | null
+});
+
 const fileInput = ref<HTMLInputElement>();
+const existingLogoUrl = ref<string>('');
 
 const previewUrl = computed(() => {
   if (form.value.logo) {
@@ -98,10 +135,39 @@ const previewUrl = computed(() => {
   return null;
 });
 
+// Watch for changes in brand prop to populate form when editing
 watch(() => props.brand, (val) => {
-  if (val) form.value = { ...val };
-  else form.value = { namaBrand: '', namaCV: '', logo: null };
+  if (val && props.isEdit) {
+    form.value = { 
+      nama_brand: val.nama_brand || '', 
+      pemilik: val.pemilik || '', 
+      deskripsi: val.deskripsi || '',
+      logo: null
+    };
+    existingLogoUrl.value = val.logo_path || '';
+  } else {
+    form.value = { 
+      nama_brand: '', 
+      pemilik: '', 
+      deskripsi: '',
+      logo: null
+    };
+    existingLogoUrl.value = '';
+  }
 }, { immediate: true });
+
+// Reset form when dialog opens/closes
+watch(() => props.open, (isOpen) => {
+  if (!isOpen) {
+    form.value = { 
+      nama_brand: '', 
+      pemilik: '', 
+      deskripsi: '',
+      logo: null
+    };
+    existingLogoUrl.value = '';
+  }
+});
 
 function handleFileUpload(event: Event) {
   const target = event.target as HTMLInputElement;
@@ -112,6 +178,7 @@ function handleFileUpload(event: Event) {
 
 function removeFile() {
   form.value.logo = null;
+  existingLogoUrl.value = '';
   if (fileInput.value) {
     fileInput.value.value = '';
   }
@@ -119,6 +186,5 @@ function removeFile() {
 
 function handleSubmit() {
   emit('submit', { ...form.value });
-  emit('close');
 }
 </script>

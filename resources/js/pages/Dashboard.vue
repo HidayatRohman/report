@@ -80,11 +80,11 @@ function formatTanggal(tanggal: string): string {
 function generateSampleData() {
   // Generate sample transactions for demo
   const sampleTransaksi = [
-    { tanggal: '2025-01-25', brand: 'NYORE COFFEE', nominal: 150000 },
-    { tanggal: '2025-01-24', brand: 'Nike', nominal: 250000 },
-    { tanggal: '2025-01-23', brand: 'Adidas', nominal: 180000 },
-    { tanggal: new Date().toISOString().split('T')[0], brand: 'NYORE COFFEE', nominal: 95000 },
-    { tanggal: new Date().toISOString().split('T')[0], brand: 'Puma', nominal: 120000 },
+    { tanggal: '2025-01-25', brand: 'Nyore Nyante', nominal: 150000 },
+    { tanggal: '2025-01-24', brand: 'Kemangi', nominal: 250000 },
+    { tanggal: '2025-01-23', brand: 'Art Coffee', nominal: 180000 },
+    { tanggal: new Date().toISOString().split('T')[0], brand: 'Nyore Nyante', nominal: 95000 },
+    { tanggal: new Date().toISOString().split('T')[0], brand: 'Kemangi', nominal: 120000 },
   ];
   daftarTransaksi.value = sampleTransaksi;
 }

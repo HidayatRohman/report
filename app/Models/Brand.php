@@ -13,6 +13,7 @@ class Brand extends Model
         'nama_brand',
         'pemilik',
         'deskripsi',
+        'logo_path',
     ];
 
     /**

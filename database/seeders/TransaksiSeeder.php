@@ -13,16 +13,16 @@ class TransaksiSeeder extends Seeder
      */
     public function run(): void
     {
-        // Data transaksi sample berdasarkan data NYORE COFFEE
+        // Data transaksi sample berdasarkan brand yang ada di BrandSeeder
         $transaksiData = [
-            ['tanggal' => '2025-01-25', 'brand' => 'NYORE COFFEE', 'nominal' => 7110000],
-            ['tanggal' => '2025-02-25', 'brand' => 'NYORE COFFEE', 'nominal' => 5114000],
-            ['tanggal' => '2025-03-25', 'brand' => 'NYORE COFFEE', 'nominal' => 2733000],
-            ['tanggal' => '2025-04-25', 'brand' => 'NYORE COFFEE', 'nominal' => 2409000],
-            ['tanggal' => '2025-05-25', 'brand' => 'NYORE COFFEE', 'nominal' => 3103900],
-            ['tanggal' => '2025-06-25', 'brand' => 'NYORE COFFEE', 'nominal' => 8769490],
-            ['tanggal' => '2025-07-25', 'brand' => 'NYORE COFFEE', 'nominal' => 8501700],
-            ['tanggal' => '2025-08-25', 'brand' => 'NYORE COFFEE', 'nominal' => 12340100],
+            ['tanggal' => '2025-01-25', 'brand' => 'Nyore Nyante', 'nominal' => 7110000],
+            ['tanggal' => '2025-02-25', 'brand' => 'Kemangi', 'nominal' => 5114000],
+            ['tanggal' => '2025-03-25', 'brand' => 'Art Coffee', 'nominal' => 2733000],
+            ['tanggal' => '2025-04-25', 'brand' => 'Nyore Nyante', 'nominal' => 2409000],
+            ['tanggal' => '2025-05-25', 'brand' => 'Kemangi', 'nominal' => 3103900],
+            ['tanggal' => '2025-06-25', 'brand' => 'Art Coffee', 'nominal' => 8769490],
+            ['tanggal' => '2025-07-25', 'brand' => 'Nyore Nyante', 'nominal' => 8501700],
+            ['tanggal' => '2025-08-25', 'brand' => 'Kemangi', 'nominal' => 12340100],
         ];
 
         foreach ($transaksiData as $data) {
