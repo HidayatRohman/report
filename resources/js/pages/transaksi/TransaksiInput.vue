@@ -49,7 +49,7 @@
               <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal Hari Ini</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal</p>
                     <p class="text-xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(totalNominal) }}</p>
                   </div>
                   <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
@@ -62,7 +62,7 @@
               <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Hari Ini</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Transaksi</p>
                     <p class="text-xl font-bold text-gray-900 dark:text-white">{{ transaksiHariIni.length }}</p>
                   </div>
                   <div class="p-2 bg-purple-100 dark:bg-purple-800 rounded-full">
