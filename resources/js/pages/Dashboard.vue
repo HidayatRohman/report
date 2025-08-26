@@ -43,11 +43,21 @@ const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: stri
 );
 
 const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>(
-  (props.transaksis || []).map(transaksi => ({
-    tanggal: transaksi.tanggal,
-    brand: transaksi.brand,
-    nominal: typeof transaksi.nominal === 'string' ? parseFloat(transaksi.nominal) : transaksi.nominal
-  }))
+  (props.transaksis || []).map(transaksi => {
+    // Ensure date is in YYYY-MM-DD format
+    let formattedDate = transaksi.tanggal;
+    if (formattedDate.includes('T')) {
+      formattedDate = formattedDate.split('T')[0];
+    } else if (formattedDate.includes(' ')) {
+      formattedDate = formattedDate.split(' ')[0];
+    }
+    
+    return {
+      tanggal: formattedDate,
+      brand: transaksi.brand,
+      nominal: typeof transaksi.nominal === 'string' ? parseFloat(transaksi.nominal) : transaksi.nominal
+    };
+  })
 );
 
 // Filter refs
@@ -73,6 +83,11 @@ const transaksiHariIni = computed(() => {
       const nominal = typeof item.nominal === 'string' ? parseFloat(item.nominal) : item.nominal;
       return total + (isNaN(nominal) ? 0 : nominal);
     }, 0);
+});
+
+const countTransaksiHariIni = computed(() => {
+  const today = new Date().toISOString().split('T')[0];
+  return daftarTransaksi.value.filter(item => item.tanggal === today).length;
 });
 
 const recentTransaksi = computed(() => {
@@ -364,9 +379,9 @@ function generateReport() {
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
                     <div class="flex items-center">
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Hari Ini</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ transaksiHariIni }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Transaksi</p>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Transaksi Hari Ini</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(transaksiHariIni) }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ countTransaksiHariIni }} transaksi hari ini</p>
                         </div>
                         <div class="p-3 bg-orange-100 dark:bg-orange-800 rounded-full">
                             <svg class="w-6 h-6 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
