@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import RevenueChart from '@/components/RevenueChart.vue';
+import MonthlyBrandRevenueChart from '@/components/MonthlyBrandRevenueChart.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
@@ -392,6 +393,12 @@ function generateReport() {
                     </div>
                 </div>
             </div>
+
+            <!-- Monthly Brand Revenue Chart -->
+            <MonthlyBrandRevenueChart 
+                :transaksi-data="daftarTransaksi" 
+                :brand-list="daftarBrand"
+            />
 
             <!-- Recent Activity & Quick Actions -->
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
