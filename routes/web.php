@@ -7,9 +7,14 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
+
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('brand-input', function () {
+    return Inertia::render('BrandInput');
+})->middleware(['auth', 'verified'])->name('brand.input');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
