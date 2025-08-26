@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import RevenueChart from '@/components/RevenueChart.vue';
 import MonthlyBrandRevenueChart from '@/components/MonthlyBrandRevenueChart.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -396,8 +395,11 @@ function generateReport() {
 
             <!-- Monthly Brand Revenue Chart -->
             <MonthlyBrandRevenueChart 
-                :transaksi-data="daftarTransaksi" 
+                :transaksi-data="filteredTransaksi" 
                 :brand-list="daftarBrand"
+                :selected-brand="selectedBrand"
+                :start-date="startDate"
+                :end-date="endDate"
             />
 
             <!-- Recent Activity & Quick Actions -->
@@ -485,8 +487,7 @@ function generateReport() {
                 </div>
             </div>
 
-            <!-- Revenue Chart -->
-            <RevenueChart :transaksi-data="filteredTransaksi" />            <!-- Brand Overview -->
+            <!-- Brand Overview -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Brand Terdaftar</h3>
