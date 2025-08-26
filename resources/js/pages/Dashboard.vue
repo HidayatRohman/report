@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import RevenueChart from '@/components/RevenueChart.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
@@ -277,6 +278,9 @@ function generateReport() {
                     </div>
                 </div>
             </div>
+
+            <!-- Revenue Chart -->
+            <RevenueChart />
 
             <!-- Brand Overview -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
