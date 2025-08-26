@@ -39,6 +39,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'karyawan',
         ]);
 
+        // Seeder untuk brand
+        $this->call(BrandSeeder::class);
+        
         // Seeder untuk transaksi
         $this->call(TransaksiSeeder::class);
     }
