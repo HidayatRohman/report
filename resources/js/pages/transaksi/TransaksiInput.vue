@@ -9,15 +9,26 @@
                 <h1 class="text-2xl font-bold mb-2">Input Transaksi</h1>
                 <p class="text-gray-600">Kelola transaksi harian brand Anda</p>
               </div>
-              <button 
-                @click="openDialog" 
-                class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                </svg>
-                Tambah Transaksi
-              </button>
+              <div class="flex gap-3">
+                <button 
+                  @click="triggerCsvImport" 
+                  class="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium hover:from-green-700 hover:to-emerald-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                  </svg>
+                  Import CSV
+                </button>
+                <button 
+                  @click="openDialog" 
+                  class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                  </svg>
+                  Tambah Transaksi
+                </button>
+              </div>
             </div>
 
             <!-- Stats Cards -->
@@ -101,6 +112,15 @@
         @submit="handleDialogSubmit" 
         @close="closeDialog" 
       />
+
+      <!-- Hidden CSV Input -->
+      <input 
+        type="file" 
+        ref="csvFileInput" 
+        accept=".csv" 
+        @change="handleCsvImport" 
+        class="hidden"
+      />
     </div>
   </AppLayout>
 </template>
@@ -113,6 +133,7 @@ import TransaksiDialog from './TransaksiDialog.vue';
 const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>([]);
 const dialogOpen = ref(false);
 const editIdx = ref<number | null>(null);
+const csvFileInput = ref<HTMLInputElement>();
 
 // Simulasi data brand (nanti bisa ambil dari API atau state management)
 const brandList = ref([
@@ -198,4 +219,72 @@ onMounted(() => {
     }
   }
 });
+
+function triggerCsvImport() {
+  csvFileInput.value?.click();
+}
+
+function handleCsvImport(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const csv = e.target?.result as string;
+    parseCSV(csv);
+  };
+  reader.readAsText(file);
+}
+
+function parseCSV(csv: string) {
+  const lines = csv.split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  
+  // Cari index kolom yang diperlukan
+  const tanggalIndex = headers.findIndex(h => h.toLowerCase().includes('tanggal') || h.toLowerCase().includes('date'));
+  const brandIndex = headers.findIndex(h => h.toLowerCase().includes('brand') || h.toLowerCase().includes('nama'));
+  
+  // Untuk data Excel yang diberikan, ambil kolom NYORE COFFEE (index 1)
+  const nominalIndex = 1; // NYORE COFFEE ada di kolom B (index 1)
+  
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',').map(v => v.trim());
+    
+    if (values.length < 2) continue;
+    
+    // Parse tanggal dari format seperti "1/25", "2/25", dll
+    const dateStr = values[0];
+    if (!dateStr) continue;
+    
+    const [day, month] = dateStr.split('/');
+    const currentYear = new Date().getFullYear();
+    const tanggal = `${currentYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    
+    // Parse nominal (hapus Rp, titik, dan koma)
+    const nominalStr = values[nominalIndex];
+    if (!nominalStr || nominalStr === 'Rp0' || nominalStr === '') continue;
+    
+    const nominal = parseInt(nominalStr.replace(/[Rp.,]/g, ''));
+    if (isNaN(nominal) || nominal === 0) continue;
+    
+    // Gunakan brand default NYORE COFFEE
+    const brand = 'NYORE COFFEE';
+    
+    // Tambah ke daftar transaksi
+    daftarTransaksi.value.push({
+      tanggal,
+      brand,
+      nominal
+    });
+  }
+  
+  // Reset input file
+  if (csvFileInput.value) {
+    csvFileInput.value.value = '';
+  }
+  
+  alert(`Berhasil import ${daftarTransaksi.value.length} transaksi dari CSV`);
+}
 </script>
