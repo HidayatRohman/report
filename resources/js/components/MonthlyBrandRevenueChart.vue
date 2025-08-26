@@ -16,19 +16,22 @@
     
     <!-- Chart Container -->
     <div class="relative">
-      <div ref="chartContainer" class="w-full h-80"></div>
-      <div v-if="!chartData || !chartData.months.length" class="absolute inset-0 flex items-center justify-center">
+      <div v-if="hasData">
+        <div ref="chartContainer" class="w-full h-80"></div>
+      </div>
+      <div v-else class="h-80 flex items-center justify-center">
         <div class="text-center text-gray-500 dark:text-gray-400">
           <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h2a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
           </svg>
           <p>Tidak ada data transaksi</p>
+          <p class="text-xs mt-1">Total {{ transaksiData.length }} transaksi ditemukan</p>
         </div>
       </div>
     </div>
 
     <!-- Legend & Summary -->
-    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <div v-if="hasData" class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div v-for="brand in brandSummary" :key="brand.name" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div class="flex items-center gap-3">
@@ -157,6 +160,10 @@ const brandSummary = computed(() => {
       color: brandColors[index % brandColors.length]
     }))
     .sort((a, b) => b.total - a.total);
+});
+
+const hasData = computed(() => {
+  return chartData.value && chartData.value.months.length > 0;
 });
 
 const formatRupiah = (amount: number): string => {
