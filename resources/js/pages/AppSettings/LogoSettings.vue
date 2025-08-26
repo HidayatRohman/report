@@ -29,6 +29,39 @@
           </div>
         </div>
 
+        <!-- Toast Notifications -->
+        <div 
+          v-if="showNotification" 
+          class="fixed top-4 right-4 z-50 transition-all duration-300 transform"
+          :class="notificationClass"
+        >
+          <div class="flex items-center gap-3 p-4 rounded-lg shadow-lg border max-w-md">
+            <div class="flex-shrink-0">
+              <svg v-if="notificationType === 'success'" class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <svg v-else-if="notificationType === 'error'" class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <svg v-else class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium" :class="notificationTextClass">{{ notificationTitle }}</p>
+              <p class="text-sm" :class="notificationDescClass">{{ notificationMessage }}</p>
+            </div>
+            <button 
+              @click="hideNotification"
+              class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
         <!-- Settings Grid -->
         <div class="grid gap-8 lg:grid-cols-2">
           <!-- Logo Upload -->
@@ -213,7 +246,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 interface Settings {
   logo: string;
@@ -235,10 +268,63 @@ const faviconFile = ref<File | null>(null);
 const appName = ref(props.settings.app_name);
 const loading = ref(false);
 
+// Notification state
+const showNotification = ref(false);
+const notificationType = ref<'success' | 'error' | 'info'>('success');
+const notificationTitle = ref('');
+const notificationMessage = ref('');
+
+// Notification computed classes
+const notificationClass = computed(() => {
+  return {
+    'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800': notificationType.value === 'success',
+    'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800': notificationType.value === 'error',
+    'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800': notificationType.value === 'info'
+  };
+});
+
+const notificationTextClass = computed(() => {
+  return {
+    'text-green-800 dark:text-green-200': notificationType.value === 'success',
+    'text-red-800 dark:text-red-200': notificationType.value === 'error',
+    'text-blue-800 dark:text-blue-200': notificationType.value === 'info'
+  };
+});
+
+const notificationDescClass = computed(() => {
+  return {
+    'text-green-600 dark:text-green-400': notificationType.value === 'success',
+    'text-red-600 dark:text-red-400': notificationType.value === 'error',
+    'text-blue-600 dark:text-blue-400': notificationType.value === 'info'
+  };
+});
+
+// Notification methods
+const showNotificationMessage = (type: 'success' | 'error' | 'info', title: string, message: string) => {
+  notificationType.value = type;
+  notificationTitle.value = title;
+  notificationMessage.value = message;
+  showNotification.value = true;
+  
+  // Auto hide after 5 seconds
+  setTimeout(() => {
+    hideNotification();
+  }, 5000);
+};
+
+const hideNotification = () => {
+  showNotification.value = false;
+};
+
 const handleLogoChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
     logoFile.value = target.files[0];
+    showNotificationMessage(
+      'info', 
+      'Logo Dipilih', 
+      `File ${target.files[0].name} siap untuk diupload`
+    );
   }
 };
 
@@ -246,11 +332,29 @@ const handleFaviconChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
     faviconFile.value = target.files[0];
+    showNotificationMessage(
+      'info', 
+      'Favicon Dipilih', 
+      `File ${target.files[0].name} siap untuk diupload`
+    );
   }
 };
 
 const updateSettings = async () => {
+  // Check if there are any changes
+  if (!logoFile.value && !faviconFile.value && appName.value === props.settings.app_name) {
+    showNotificationMessage(
+      'info', 
+      'Tidak Ada Perubahan', 
+      'Tidak ada perubahan yang perlu disimpan'
+    );
+    return;
+  }
+  
   loading.value = true;
+  
+  // Show loading notification
+  showNotificationMessage('info', 'Menyimpan...', 'Sedang memproses pengaturan logo');
   
   try {
     const formData = new FormData();
@@ -269,18 +373,40 @@ const updateSettings = async () => {
 
     router.post('/settings/logo', formData, {
       preserveScroll: true,
-      onSuccess: () => {
+      onSuccess: (page) => {
         logoFile.value = null;
         faviconFile.value = null;
+        
         // Reset file inputs
         const logoInput = document.querySelector('input[type="file"]:first-of-type') as HTMLInputElement;
         const faviconInput = document.querySelector('input[type="file"]:last-of-type') as HTMLInputElement;
         if (logoInput) logoInput.value = '';
         if (faviconInput) faviconInput.value = '';
+        
+        // Show success notification
+        showNotificationMessage(
+          'success', 
+          'Berhasil Disimpan!', 
+          'Pengaturan logo telah berhasil diperbarui'
+        );
+      },
+      onError: (errors) => {
+        // Show error notification
+        const errorMessage = Object.values(errors).flat().join(', ') || 'Terjadi kesalahan saat menyimpan';
+        showNotificationMessage(
+          'error', 
+          'Gagal Menyimpan', 
+          errorMessage
+        );
       }
     });
   } catch (error) {
     console.error('Error updating settings:', error);
+    showNotificationMessage(
+      'error', 
+      'Error', 
+      'Terjadi kesalahan yang tidak terduga'
+    );
   } finally {
     loading.value = false;
   }
@@ -288,9 +414,26 @@ const updateSettings = async () => {
 
 const deleteLogo = (type: 'logo' | 'favicon') => {
   if (confirm(`Yakin ingin menghapus ${type}?`)) {
+    showNotificationMessage('info', 'Menghapus...', `Sedang menghapus ${type}`);
+    
     router.delete('/settings/logo', {
       data: { type },
-      preserveScroll: true
+      preserveScroll: true,
+      onSuccess: () => {
+        showNotificationMessage(
+          'success', 
+          'Berhasil Dihapus!', 
+          `${type.charAt(0).toUpperCase() + type.slice(1)} telah berhasil dihapus`
+        );
+      },
+      onError: (errors) => {
+        const errorMessage = Object.values(errors).flat().join(', ') || 'Terjadi kesalahan saat menghapus';
+        showNotificationMessage(
+          'error', 
+          'Gagal Menghapus', 
+          errorMessage
+        );
+      }
     });
   }
 };
@@ -303,5 +446,12 @@ const resetForm = () => {
   // Reset file inputs
   const inputs = document.querySelectorAll('input[type="file"]') as NodeListOf<HTMLInputElement>;
   inputs.forEach(input => input.value = '');
+  
+  // Show reset notification
+  showNotificationMessage(
+    'info', 
+    'Form Direset', 
+    'Semua perubahan telah dibatalkan'
+  );
 };
 </script>
