@@ -10,6 +10,7 @@ interface Brand {
   id: number;
   nama_brand: string;
   pemilik: string;
+  logo_path?: string;
 }
 
 interface Transaksi {
@@ -38,7 +39,7 @@ const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: stri
   (props.brands || []).map(brand => ({
     namaBrand: brand.nama_brand,
     namaCV: brand.pemilik,
-    logoUrl: null
+    logoUrl: brand.logo_path ? `/storage/${brand.logo_path}` : null
   }))
 );
 

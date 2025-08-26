@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 
 Route::get('dashboard', function () {
-    $brands = \App\Models\Brand::all(['id', 'nama_brand', 'pemilik']);
+    $brands = \App\Models\Brand::all(['id', 'nama_brand', 'pemilik', 'logo_path']);
     $transaksis = \App\Models\Transaksi::orderBy('tanggal', 'desc')->get();
     
     return Inertia::render('Dashboard', [
