@@ -51,9 +51,6 @@
 </template>
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-// ...existing code...
-
-<script setup lang="ts">
 import { ref } from 'vue';
 
 const form = ref({
