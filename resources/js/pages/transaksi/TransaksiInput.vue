@@ -79,6 +79,9 @@
         </div>
       </div>
       
+      <!-- Daily Transaction Chart -->
+      <DailyTransactionChart :transaksis="daftarTransaksi" />
+      
       <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white dark:bg-gray-800 p-4 md:p-8 mt-4">
         <h2 class="text-lg md:text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Transaksi</h2>
         
@@ -241,6 +244,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { ref, computed, onMounted } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import TransaksiDialog from './TransaksiDialog.vue';
+import DailyTransactionChart from '@/components/DailyTransactionChart.vue';
 
 interface Brand {
   id: number;
