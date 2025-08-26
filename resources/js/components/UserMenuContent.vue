@@ -26,26 +26,35 @@ defineProps<Props>();
     </DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
-        <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="edit()" prefetch as="button">
-                <Settings class="mr-2 h-4 w-4" />
-                Profile Settings
-            </Link>
-        </DropdownMenuItem>
-        
-        <!-- Appearance Settings Submenu -->
+        <!-- Profile Settings Submenu -->
         <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-                <Palette class="mr-2 h-4 w-4" />
-                <span>Appearance</span>
+                <Settings class="mr-2 h-4 w-4" />
+                <span>Profile Settings</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
                 <DropdownMenuItem :as-child="true">
-                    <Link class="block w-full" href="/settings/logo" as="button">
-                        <Image class="mr-2 h-4 w-4" />
-                        Pengaturan Logo
+                    <Link class="block w-full" :href="edit()" prefetch as="button">
+                        <Settings class="mr-2 h-4 w-4" />
+                        Account Settings
                     </Link>
                 </DropdownMenuItem>
+                
+                <!-- Appearance Settings Submenu -->
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                        <Palette class="mr-2 h-4 w-4" />
+                        <span>Appearance</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                        <DropdownMenuItem :as-child="true">
+                            <Link class="block w-full" href="/settings/logo" as="button">
+                                <Image class="mr-2 h-4 w-4" />
+                                Pengaturan Logo
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
             </DropdownMenuSubContent>
         </DropdownMenuSub>
     </DropdownMenuGroup>
