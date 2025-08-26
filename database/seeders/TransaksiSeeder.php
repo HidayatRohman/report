@@ -29,6 +29,16 @@ class TransaksiSeeder extends Seeder
             ['tanggal' => '2025-08-26', 'brand' => 'Art Coffee', 'nominal' => 800000],
         ];
 
+        // Tambahkan data dummy untuk testing pagination (35+ records)
+        $brands = ['Nyore Nyante', 'Kemangi', 'Art Coffee'];
+        for ($i = 1; $i <= 30; $i++) {
+            $transaksiData[] = [
+                'tanggal' => '2025-08-' . str_pad($i <= 26 ? $i : 26, 2, '0', STR_PAD_LEFT),
+                'brand' => $brands[array_rand($brands)],
+                'nominal' => rand(500000, 5000000)
+            ];
+        }
+
         foreach ($transaksiData as $data) {
             Transaksi::create($data);
         }

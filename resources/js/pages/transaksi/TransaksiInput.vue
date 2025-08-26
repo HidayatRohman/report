@@ -89,18 +89,77 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, idx) in daftarTransaksi" :key="idx" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <tr v-for="(item, idx) in paginatedTransaksi" :key="idx" class="hover:bg-gray-50 dark:hover:bg-gray-700">
               <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatTanggal(item.tanggal) }}</td>
               <td class="py-2 text-gray-900 dark:text-gray-100">{{ item.brand }}</td>
               <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatRupiah(item.nominal) }}</td>
               <td class="py-2">
-                <button @click="editTransaksi(idx)" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500">Edit</button>
-                <button @click="deleteTransaksi(idx)" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2">Hapus</button>
+                <button @click="editTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500">Edit</button>
+                <button @click="deleteTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2">Hapus</button>
               </td>
             </tr>
           </tbody>
         </table>
         <div v-if="daftarTransaksi.length === 0" class="text-gray-500 dark:text-gray-400 mt-4">Belum ada data transaksi.</div>
+        
+        <!-- Pagination -->
+        <div v-if="showPagination" class="flex items-center justify-between mt-6 border-t pt-4 border-gray-200 dark:border-gray-600">
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            Menampilkan {{ ((currentPage - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage * itemsPerPage, daftarTransaksi.length) }} dari {{ daftarTransaksi.length }} transaksi
+          </div>
+          
+          <div class="flex items-center space-x-1">
+            <!-- Previous Button -->
+            <button 
+              @click="prevPage" 
+              :disabled="currentPage === 1"
+              :class="[
+                'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                currentPage === 1 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700'
+              ]"
+            >
+              ‹ Previous
+            </button>
+            
+            <!-- Page Numbers -->
+            <template v-for="page in totalPages" :key="page">
+              <button 
+                v-if="page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)"
+                @click="goToPage(page)"
+                :class="[
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  page === currentPage 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700'
+                ]"
+              >
+                {{ page }}
+              </button>
+              <span 
+                v-else-if="page === currentPage - 2 || page === currentPage + 2" 
+                class="px-2 py-2 text-gray-500 dark:text-gray-400"
+              >
+                ...
+              </span>
+            </template>
+            
+            <!-- Next Button -->
+            <button 
+              @click="nextPage" 
+              :disabled="currentPage === totalPages"
+              :class="[
+                'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                currentPage === totalPages 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700'
+              ]"
+            >
+              Next ›
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Dialog -->
@@ -174,6 +233,10 @@ const csvFileInput = ref<HTMLInputElement>();
 const showNotification = ref(false);
 const notificationMessage = ref('');
 
+// Pagination state
+const currentPage = ref(1);
+const itemsPerPage = 31;
+
 // Transform brands for dialog component
 const activeBrandList = computed(() => {
   return (props.brands || []).map(brand => ({
@@ -221,6 +284,21 @@ const transaksiHariIni = computed(() => {
   return daftarTransaksi.value;
 });
 
+// Pagination computed properties
+const totalPages = computed(() => {
+  return Math.ceil(daftarTransaksi.value.length / itemsPerPage);
+});
+
+const paginatedTransaksi = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return daftarTransaksi.value.slice(start, end);
+});
+
+const showPagination = computed(() => {
+  return daftarTransaksi.value.length > itemsPerPage;
+});
+
 function openDialog() {
   editIdx.value = null;
   dialogOpen.value = true;
@@ -228,6 +306,35 @@ function openDialog() {
 
 function closeDialog() {
   dialogOpen.value = false;
+}
+
+// Pagination functions
+function goToPage(page: number) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+}
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+}
+
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+}
+
+function getActualIndex(paginatedIndex: number): number {
+  return (currentPage.value - 1) * itemsPerPage + paginatedIndex;
+}
+
+function resetPaginationAfterAdd() {
+  // Reset ke halaman terakhir setelah menambah data baru
+  const newTotalPages = Math.ceil(daftarTransaksi.value.length / itemsPerPage);
+  currentPage.value = newTotalPages;
 }
 
 function handleDialogSubmit(data: { tanggal: string; brand: string; nominal: number }) {
