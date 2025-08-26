@@ -13,7 +13,7 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('brand-input', function () {
-    return Inertia::render('BrandInput');
+    return Inertia::render('brand/BrandForm');
 })->middleware(['auth', 'verified'])->name('brand.input');
 
 Route::get('transaksi-input', function () {
