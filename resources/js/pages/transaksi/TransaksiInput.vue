@@ -6,8 +6,8 @@
           <div class="p-8">
             <div class="flex items-center justify-between mb-6">
               <div>
-                <h1 class="text-2xl font-bold mb-2">Input Transaksi</h1>
-                <p class="text-gray-600">Kelola transaksi harian brand Anda</p>
+                <h1 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Input Transaksi</h1>
+                <p class="text-gray-600 dark:text-gray-300">Kelola transaksi harian brand Anda</p>
               </div>
               <div class="flex gap-3">
                 <button 
@@ -33,40 +33,40 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-white rounded-xl shadow-lg p-4 border-l-4 border-green-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-green-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600">Total Transaksi</p>
-                    <p class="text-xl font-bold text-gray-900">{{ daftarTransaksi.length }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Transaksi</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ daftarTransaksi.length }}</p>
                   </div>
-                  <div class="p-2 bg-green-100 rounded-full">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="p-2 bg-green-100 dark:bg-green-800 rounded-full">
+                    <svg class="w-5 h-5 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                     </svg>
                   </div>
                 </div>
               </div>
-              <div class="bg-white rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600">Total Nominal</p>
-                    <p class="text-xl font-bold text-gray-900">{{ formatRupiah(totalNominal) }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Nominal</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ formatRupiah(totalNominal) }}</p>
                   </div>
-                  <div class="p-2 bg-blue-100 rounded-full">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
                     </svg>
                   </div>
                 </div>
               </div>
-              <div class="bg-white rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600">Hari Ini</p>
-                    <p class="text-xl font-bold text-gray-900">{{ transaksiHariIni.length }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Hari Ini</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ transaksiHariIni.length }}</p>
                   </div>
-                  <div class="p-2 bg-purple-100 rounded-full">
-                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="p-2 bg-purple-100 dark:bg-purple-800 rounded-full">
+                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                   </div>
@@ -77,22 +77,22 @@
         </div>
       </div>
       
-      <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white p-8 mt-4">
-        <h2 class="text-xl font-semibold mb-4">Daftar Transaksi</h2>
+      <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white dark:bg-gray-800 p-8 mt-4">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Transaksi</h2>
         <table class="w-full text-left border-collapse">
           <thead>
             <tr>
-              <th class="border-b pb-2">Tanggal</th>
-              <th class="border-b pb-2">Brand</th>
-              <th class="border-b pb-2">Nominal</th>
-              <th class="border-b pb-2">Aksi</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Tanggal</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Brand</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Nominal</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, idx) in daftarTransaksi" :key="idx" class="hover:bg-gray-50">
-              <td class="py-2">{{ formatTanggal(item.tanggal) }}</td>
-              <td class="py-2">{{ item.brand }}</td>
-              <td class="py-2">{{ formatRupiah(item.nominal) }}</td>
+            <tr v-for="(item, idx) in daftarTransaksi" :key="idx" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatTanggal(item.tanggal) }}</td>
+              <td class="py-2 text-gray-900 dark:text-gray-100">{{ item.brand }}</td>
+              <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatRupiah(item.nominal) }}</td>
               <td class="py-2">
                 <button @click="editTransaksi(idx)" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500">Edit</button>
                 <button @click="deleteTransaksi(idx)" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2">Hapus</button>
@@ -100,7 +100,7 @@
             </tr>
           </tbody>
         </table>
-        <div v-if="daftarTransaksi.length === 0" class="text-gray-500 mt-4">Belum ada data transaksi.</div>
+        <div v-if="daftarTransaksi.length === 0" class="text-gray-500 dark:text-gray-400 mt-4">Belum ada data transaksi.</div>
       </div>
 
       <!-- Dialog -->

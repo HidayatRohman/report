@@ -6,8 +6,8 @@
           <div class="p-8">
             <div class="flex items-center justify-between mb-6">
               <div>
-                <h1 class="text-2xl font-bold mb-2">Input Brand</h1>
-                <p class="text-gray-600">Kelola brand dan logo perusahaan Anda</p>
+                <h1 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Input Brand</h1>
+                <p class="text-gray-600 dark:text-gray-300">Kelola brand dan logo perusahaan Anda</p>
               </div>
               <button 
                 @click="openDialog" 
@@ -22,40 +22,40 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-white rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600">Total Brand</p>
-                    <p class="text-xl font-bold text-gray-900">{{ daftarBrand.length }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Brand</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ daftarBrand.length }}</p>
                   </div>
-                  <div class="p-2 bg-blue-100 rounded-full">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                     </svg>
                   </div>
                 </div>
               </div>
-              <div class="bg-white rounded-xl shadow-lg p-4 border-l-4 border-green-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-green-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600">Brand Aktif</p>
-                    <p class="text-xl font-bold text-gray-900">{{ daftarBrand.length }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Brand Aktif</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ daftarBrand.length }}</p>
                   </div>
-                  <div class="p-2 bg-green-100 rounded-full">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="p-2 bg-green-100 dark:bg-green-800 rounded-full">
+                    <svg class="w-5 h-5 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                   </div>
                 </div>
               </div>
-              <div class="bg-white rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
                 <div class="flex items-center">
                   <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-600">CV Terdaftar</p>
-                    <p class="text-xl font-bold text-gray-900">{{ new Set(daftarBrand.map(b => b.namaCV)).size }}</p>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-300">CV Terdaftar</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ new Set(daftarBrand.map(b => b.namaCV)).size }}</p>
                   </div>
-                  <div class="p-2 bg-purple-100 rounded-full">
-                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="p-2 bg-purple-100 dark:bg-purple-800 rounded-full">
+                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
                   </div>
@@ -66,25 +66,25 @@
         </div>
       </div>
       
-      <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white p-8 mt-4">
-        <h2 class="text-xl font-semibold mb-4">Daftar Brand</h2>
+      <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white dark:bg-gray-800 p-8 mt-4">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Brand</h2>
         <table class="w-full text-left border-collapse">
           <thead>
             <tr>
-              <th class="border-b pb-2">Logo</th>
-              <th class="border-b pb-2">Nama Brand</th>
-              <th class="border-b pb-2">Nama CV</th>
-              <th class="border-b pb-2">Aksi</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Logo</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Nama Brand</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Nama CV</th>
+              <th class="border-b pb-2 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, idx) in daftarBrand" :key="idx" class="hover:bg-gray-50">
+            <tr v-for="(item, idx) in daftarBrand" :key="idx" class="hover:bg-gray-50 dark:hover:bg-gray-700">
               <td class="py-2">
                 <img v-if="item.logoUrl" :src="item.logoUrl" alt="Logo" class="h-10 rounded" />
-                <span v-else>-</span>
+                <span v-else class="text-gray-500 dark:text-gray-400">-</span>
               </td>
-              <td class="py-2">{{ item.namaBrand }}</td>
-              <td class="py-2">{{ item.namaCV }}</td>
+              <td class="py-2 text-gray-900 dark:text-gray-100">{{ item.namaBrand }}</td>
+              <td class="py-2 text-gray-900 dark:text-gray-100">{{ item.namaCV }}</td>
               <td class="py-2">
                 <button @click="editBrand(idx)" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500">Edit</button>
                 <button @click="deleteBrand(idx)" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2">Hapus</button>
@@ -92,7 +92,7 @@
             </tr>
           </tbody>
         </table>
-        <div v-if="daftarBrand.length === 0" class="text-gray-500 mt-4">Belum ada data brand.</div>
+        <div v-if="daftarBrand.length === 0" class="text-gray-500 dark:text-gray-400 mt-4">Belum ada data brand.</div>
       </div>
 
       <!-- Dialog -->
