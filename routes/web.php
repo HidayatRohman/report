@@ -16,5 +16,9 @@ Route::get('brand-input', function () {
     return Inertia::render('BrandInput');
 })->middleware(['auth', 'verified'])->name('brand.input');
 
+Route::get('transaksi-input', function () {
+    return Inertia::render('transaksi/TransaksiInput');
+})->middleware(['auth', 'verified'])->name('transaksi.input');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

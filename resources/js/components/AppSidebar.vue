@@ -9,7 +9,7 @@ import { Link } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-import { FileImage } from 'lucide-vue-next';
+import { FileImage, Calculator } from 'lucide-vue-next';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
@@ -20,6 +20,11 @@ const mainNavItems: NavItem[] = [
         title: 'Input Brand',
         href: '/brand-input',
         icon: FileImage,
+    },
+    {
+        title: 'Input Transaksi',
+        href: '/transaksi-input',
+        icon: Calculator,
     },
 ];
 
