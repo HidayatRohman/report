@@ -260,7 +260,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
-  { title: 'Settings', href: '#' },
+  { title: 'Profile Settings', href: '#' },
   { title: 'Appearance', href: '#' },
   { title: 'Pengaturan Logo', href: '#' }
 ];

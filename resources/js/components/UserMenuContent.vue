@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import UserInfo from '@/components/UserInfo.vue';
-import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings } from 'lucide-vue-next';
+import { LogOut, Settings, Palette, Image } from 'lucide-vue-next';
 
 interface Props {
     user: User;
@@ -29,9 +29,25 @@ defineProps<Props>();
         <DropdownMenuItem :as-child="true">
             <Link class="block w-full" :href="edit()" prefetch as="button">
                 <Settings class="mr-2 h-4 w-4" />
-                Settings
+                Profile Settings
             </Link>
         </DropdownMenuItem>
+        
+        <!-- Appearance Settings Submenu -->
+        <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+                <Palette class="mr-2 h-4 w-4" />
+                <span>Appearance</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+                <DropdownMenuItem :as-child="true">
+                    <Link class="block w-full" href="/settings/logo" as="button">
+                        <Image class="mr-2 h-4 w-4" />
+                        Pengaturan Logo
+                    </Link>
+                </DropdownMenuItem>
+            </DropdownMenuSubContent>
+        </DropdownMenuSub>
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
     <DropdownMenuItem :as-child="true">

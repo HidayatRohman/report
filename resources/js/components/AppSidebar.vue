@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import NavFooter from '@/components/NavFooter.vue';
-import NavGroup from '@/components/NavGroup.vue';
+import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Settings, Palette } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 import { FileImage, Calculator } from 'lucide-vue-next';
@@ -27,25 +27,6 @@ const mainNavItems: NavItem[] = [
         href: '/transaksi-input',
         icon: Calculator,
     },
-];
-
-const settingsNavItems: NavItem[] = [
-    {
-        title: 'Settings',
-        icon: Settings,
-        items: [
-            {
-                title: 'Appearance',
-                icon: Palette,
-                items: [
-                    {
-                        title: 'Pengaturan Logo',
-                        href: '/settings/logo',
-                    }
-                ]
-            }
-        ]
-    }
 ];
 
 const footerNavItems: NavItem[] = [
@@ -77,8 +58,7 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavGroup title="Main" :items="mainNavItems" />
-            <NavGroup :items="settingsNavItems" />
+            <NavMain :items="mainNavItems" />
         </SidebarContent>
 
         <SidebarFooter>
