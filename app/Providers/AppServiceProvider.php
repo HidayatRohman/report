@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\AppSetting;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Share app settings with all Inertia pages
+        Inertia::share([
+            'appSettings' => function () {
+                return [
+                    'app_name' => AppSetting::get('app_name', 'Report App'),
+                    'logo' => AppSetting::get('logo', ''),
+                    'favicon' => AppSetting::get('favicon', ''),
+                ];
+            }
+        ]);
     }
 }

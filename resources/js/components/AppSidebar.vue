@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Settings } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 import { FileImage, Calculator } from 'lucide-vue-next';
@@ -25,6 +25,11 @@ const mainNavItems: NavItem[] = [
         title: 'Input Transaksi',
         href: '/transaksi-input',
         icon: Calculator,
+    },
+    {
+        title: 'Pengaturan Logo',
+        href: '/settings/logo',
+        icon: Settings,
     },
 ];
 

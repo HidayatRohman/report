@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\AppSettingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,6 +30,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Transaksi routes
     Route::resource('transaksis', TransaksiController::class);
     Route::put('transaksis/{id}', [TransaksiController::class, 'update'])->name('transaksis.update');
+    
+    // App Settings routes
+    Route::get('settings/logo', [AppSettingController::class, 'logoSettings'])->name('settings.logo');
+    Route::post('settings/logo', [AppSettingController::class, 'updateLogo'])->name('settings.logo.update');
+    Route::delete('settings/logo', [AppSettingController::class, 'deleteLogo'])->name('settings.logo.delete');
 });
 
 Route::get('brand-input', [BrandController::class, 'create'])->middleware(['auth', 'verified'])->name('brand.input');
