@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,16 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('auth/Register');
+        // Get app settings for logo and branding
+        $appSettings = AppSetting::first();
+        
+        return Inertia::render('auth/Register', [
+            'appSettings' => $appSettings ? [
+                'app_name' => $appSettings->app_name,
+                'logo' => $appSettings->logo,
+                'favicon' => $appSettings->favicon,
+            ] : null,
+        ]);
     }
 
     /**

@@ -7,7 +7,16 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    // Get app settings for logo and branding
+    $appSettings = \App\Models\AppSetting::first();
+    
+    return Inertia::render('Welcome', [
+        'appSettings' => $appSettings ? [
+            'app_name' => $appSettings->app_name,
+            'logo' => $appSettings->logo,
+            'favicon' => $appSettings->favicon,
+        ] : null,
+    ]);
 })->name('home');
 
 

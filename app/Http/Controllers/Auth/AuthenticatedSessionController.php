@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\AppSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,9 +19,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): Response
     {
+        // Get app settings for logo and branding
+        $appSettings = AppSetting::first();
+        
         return Inertia::render('auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => $request->session()->get('status'),
+            'appSettings' => $appSettings ? [
+                'app_name' => $appSettings->app_name,
+                'logo' => $appSettings->logo,
+                'favicon' => $appSettings->favicon,
+            ] : null,
         ]);
     }
 
