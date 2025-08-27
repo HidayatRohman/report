@@ -16,7 +16,7 @@
               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Masukkan nama brand"
             />
-            <div v-if="errors.nama_brand" class="text-red-500 text-sm">{{ errors.nama_brand }}</div>
+            <div v-if="errors?.nama_brand" class="text-red-500 text-sm">{{ errors.nama_brand }}</div>
           </div>
 
           <!-- Pemilik -->
@@ -30,7 +30,7 @@
               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Masukkan nama pemilik"
             />
-            <div v-if="errors.pemilik" class="text-red-500 text-sm">{{ errors.pemilik }}</div>
+            <div v-if="errors?.pemilik" class="text-red-500 text-sm">{{ errors.pemilik }}</div>
           </div>
 
           <!-- Deskripsi -->
@@ -43,7 +43,7 @@
               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Masukkan deskripsi brand (opsional)"
             ></textarea>
-            <div v-if="errors.deskripsi" class="text-red-500 text-sm">{{ errors.deskripsi }}</div>
+            <div v-if="errors?.deskripsi" class="text-red-500 text-sm">{{ errors.deskripsi }}</div>
           </div>
 
           <!-- Action Buttons -->
@@ -57,10 +57,10 @@
             </button>
             <button 
               type="submit" 
-              :disabled="processing"
+              :disabled="form.processing"
               class="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
             >
-              {{ processing ? 'Menyimpan...' : 'Update Brand' }}
+              {{ form.processing ? 'Menyimpan...' : 'Update Brand' }}
             </button>
           </div>
         </form>

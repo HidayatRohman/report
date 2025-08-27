@@ -80,7 +80,7 @@
       </div>
       
       <!-- Daily Transaction Chart -->
-      <DailyTransactionChart :transaksis="daftarTransaksi" />
+      <DailyTransactionChart :transaksis="chartTransaksis" />
       
       <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white dark:bg-gray-800 p-4 md:p-8 mt-4">
         <div class="flex items-center justify-between mb-4">
@@ -564,6 +564,16 @@ const paginatedTransaksi = computed(() => {
 
 const showPagination = computed(() => {
   return filteredTransaksi.value.length > itemsPerPage;
+});
+
+// Convert data for chart component (ensure id is always a number)
+const chartTransaksis = computed(() => {
+  return daftarTransaksi.value.map((item, index) => ({
+    id: item.id || index + 1,
+    tanggal: item.tanggal,
+    brand: item.brand,
+    nominal: item.nominal
+  }));
 });
 
 function openDialog() {

@@ -16,7 +16,7 @@
           <label for="logo" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Logo Brand</label>
           <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 sm:p-6 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors duration-200">
             <input type="file" id="logo" name="logo" @change="handleFileUpload" accept="image/*" class="hidden" ref="fileInput" />
-            <div v-if="!form.logo && !existingLogoUrl" @click="$refs.fileInput?.click()" class="cursor-pointer">
+            <div v-if="!form.logo && !existingLogoUrl" @click="triggerFileInput" class="cursor-pointer">
               <svg class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400 dark:text-gray-500 mb-2 sm:mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
               </svg>
@@ -32,7 +32,7 @@
               />
               <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{{ form.logo?.name || 'Logo saat ini' }}</p>
               <div class="flex gap-2 justify-center">
-                <button type="button" @click="$refs.fileInput?.click()" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs sm:text-sm font-medium">
+                <button type="button" @click="triggerFileInput" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs sm:text-sm font-medium">
                   {{ form.logo ? 'Ganti file' : 'Ganti logo' }}
                 </button>
                 <button type="button" @click="removeFile" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-xs sm:text-sm font-medium">Hapus</button>
@@ -174,6 +174,10 @@ function handleFileUpload(event: Event) {
   if (target.files && target.files.length > 0) {
     form.value.logo = target.files[0];
   }
+}
+
+function triggerFileInput() {
+  fileInput.value?.click();
 }
 
 function removeFile() {
