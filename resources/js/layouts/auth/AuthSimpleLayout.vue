@@ -10,7 +10,21 @@ defineProps<{
 }>();
 
 const page = usePage();
-const settings = computed(() => (page.props as any).appSettings);
+const settings = computed(() => {
+    // Try to get from page props first (from controller)
+    const pageSettings = (page.props as any).appSettings;
+    if (pageSettings) {
+        return pageSettings;
+    }
+    
+    // Fallback to global shared props
+    const globalSettings = (page.props as any).appSettings;
+    return globalSettings || {
+        app_name: 'Financial Report',
+        logo: '',
+        favicon: ''
+    };
+});
 </script>
 
 <template>
