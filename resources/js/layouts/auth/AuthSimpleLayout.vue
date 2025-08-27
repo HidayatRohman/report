@@ -11,18 +11,12 @@ defineProps<{
 
 const page = usePage();
 const settings = computed(() => {
-    // Try to get from page props first (from controller)
+    // Get appSettings from page props
     const pageSettings = (page.props as any).appSettings;
-    if (pageSettings) {
-        return pageSettings;
-    }
-    
-    // Fallback to global shared props
-    const globalSettings = (page.props as any).appSettings;
-    return globalSettings || {
-        app_name: 'Financial Report',
-        logo: '',
-        favicon: ''
+    return pageSettings || {
+        app_name: 'Kelola Pusat',
+        logo: null,
+        favicon: null
     };
 });
 </script>
@@ -88,24 +82,30 @@ const settings = computed(() => {
                                 <div class="relative">
                                     <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
                                     <div class="relative flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-xl">
-                                        <!-- Custom Logo if available, otherwise default -->
+                                        <!-- Custom Logo if available, otherwise default with initials -->
                                         <img 
                                             v-if="settings?.logo" 
                                             :src="`/storage/${settings.logo}`" 
                                             alt="Company Logo"
                                             class="h-12 w-12 object-contain rounded-lg"
                                         />
-                                        <AppLogoIcon 
+                                        <!-- Show initials based on app name -->
+                                        <div 
                                             v-else 
-                                            class="h-10 w-10 text-white" 
-                                        />
+                                            class="h-10 w-10 flex items-center justify-center text-white font-bold text-lg"
+                                        >
+                                            {{ settings?.app_name ? 
+                                                settings.app_name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase() : 
+                                                'KP' 
+                                            }}
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 <!-- Company Name -->
                                 <div class="text-center">
-                                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ settings?.app_name || 'Financial Report' }}</h1>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Professional Financial Management</p>
+                                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ settings?.app_name || 'Kelola Pusat' }}</h1>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Professional Business Management</p>
                                 </div>
                             </Link>
                             

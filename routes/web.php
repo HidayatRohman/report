@@ -10,12 +10,16 @@ Route::get('/', function () {
     // Get app settings for logo and branding
     $appSettings = \App\Models\AppSetting::first();
     
+    // Get brands for display on welcome page
+    $brands = \App\Models\Brand::all(['id', 'nama_brand', 'pemilik', 'logo_path']);
+    
     return Inertia::render('Welcome', [
         'appSettings' => $appSettings ? [
             'app_name' => $appSettings->app_name,
             'logo' => $appSettings->logo,
             'favicon' => $appSettings->favicon,
         ] : null,
+        'brands' => $brands,
     ]);
 })->name('home');
 
