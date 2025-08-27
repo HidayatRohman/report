@@ -83,7 +83,166 @@
       <DailyTransactionChart :transaksis="daftarTransaksi" />
       
       <div class="relative min-h-[200px] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border bg-white dark:bg-gray-800 p-4 md:p-8 mt-4">
-        <h2 class="text-lg md:text-xl font-semibold mb-4 text-gray-900 dark:text-white">Daftar Transaksi</h2>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg md:text-xl font-semibold text-gray-900 dark:text-white">Daftar Transaksi</h2>
+          <button 
+            @click="showFilters = !showFilters" 
+            class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+            </svg>
+            Filter
+            <svg 
+              class="w-4 h-4 transition-transform duration-200" 
+              :class="{ 'rotate-180': showFilters }" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Filter Section (Collapsible) -->
+        <div 
+          v-show="showFilters" 
+          class="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-lg p-6 mb-6 transition-all duration-300"
+          :class="{ 'animate-slideDown': showFilters, 'animate-slideUp': !showFilters }"
+        >
+          <div class="flex flex-col gap-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+                </svg>
+                Filter Transaksi
+              </h3>
+              
+              <!-- Reset Filter Button -->
+              <button 
+                @click="resetFilter" 
+                class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Reset Filter
+              </button>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Brand Filter -->
+              <div class="flex flex-col gap-2">
+                <label for="brandFilter" class="text-sm font-medium text-gray-700 dark:text-gray-300">Brand:</label>
+                <select 
+                  id="brandFilter" 
+                  v-model="selectedBrand" 
+                  @change="applyFilters"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                >
+                  <option value="">Semua Brand</option>
+                  <option v-for="brand in availableBrands" :key="brand" :value="brand">
+                    {{ brand }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Month Filter -->
+              <div class="flex flex-col gap-2">
+                <label for="monthFilter" class="text-sm font-medium text-gray-700 dark:text-gray-300">Bulan:</label>
+                <select 
+                  id="monthFilter" 
+                  v-model="selectedMonth" 
+                  @change="applyFilters"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                >
+                  <option value="">Semua Bulan</option>
+                  <option v-for="month in monthOptions" :key="month.value" :value="month.value">
+                    {{ month.label }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Start Date Filter -->
+              <div class="flex flex-col gap-2">
+                <label for="startDate" class="text-sm font-medium text-gray-700 dark:text-gray-300">Dari Tanggal:</label>
+                <input 
+                  id="startDate" 
+                  type="date" 
+                  v-model="startDate" 
+                  @change="applyFilters"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+              </div>
+
+              <!-- End Date Filter -->
+              <div class="flex flex-col gap-2">
+                <label for="endDate" class="text-sm font-medium text-gray-700 dark:text-gray-300">Sampai Tanggal:</label>
+                <input 
+                  id="endDate" 
+                  type="date" 
+                  v-model="endDate" 
+                  @change="applyFilters"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+              </div>
+            </div>
+
+            <!-- Quick Filter Buttons -->
+            <div class="flex flex-wrap gap-2">
+              <button 
+                @click="setQuickFilter('today')" 
+                class="px-3 py-2 text-sm bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-700 rounded-lg transition-colors duration-200"
+              >
+                Hari Ini
+              </button>
+              <button 
+                @click="setQuickFilter('week')" 
+                class="px-3 py-2 text-sm bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-700 rounded-lg transition-colors duration-200"
+              >
+                7 Hari Terakhir
+              </button>
+              <button 
+                @click="setQuickFilter('month')" 
+                class="px-3 py-2 text-sm bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 hover:bg-purple-200 dark:hover:bg-purple-700 rounded-lg transition-colors duration-200"
+              >
+                30 Hari Terakhir
+              </button>
+              <button 
+                @click="setQuickFilter('current-month')" 
+                class="px-3 py-2 text-sm bg-orange-100 dark:bg-orange-800 text-orange-800 dark:text-orange-200 hover:bg-orange-200 dark:hover:bg-orange-700 rounded-lg transition-colors duration-200"
+              >
+                Bulan Ini
+              </button>
+            </div>
+
+            <!-- Filter Summary -->
+            <div v-if="hasActiveFilters" class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Filter Aktif:</p>
+                  <div class="flex flex-wrap gap-2">
+                    <span v-if="selectedBrand" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200">
+                      Brand: {{ selectedBrand }}
+                    </span>
+                    <span v-if="selectedMonth" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200">
+                      Bulan: {{ getMonthName(selectedMonth) }}
+                    </span>
+                    <span v-if="startDate && endDate" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200">
+                      {{ formatTanggal(startDate) }} - {{ formatTanggal(endDate) }}
+                    </span>
+                  </div>
+                </div>
+                <div class="text-sm text-blue-700 dark:text-blue-300">
+                  <span class="font-medium">{{ filteredTransaksi.length }}</span> dari {{ daftarTransaksi.length }} transaksi
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- Desktop Table View -->
         <div class="hidden md:block overflow-x-auto">
@@ -143,7 +302,8 @@
         <!-- Pagination -->
         <div v-if="showPagination" class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 border-t pt-4 border-gray-200 dark:border-gray-600 gap-4">
           <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">
-            Menampilkan {{ ((currentPage - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage * itemsPerPage, daftarTransaksi.length) }} dari {{ daftarTransaksi.length }} transaksi
+            Menampilkan {{ ((currentPage - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage * itemsPerPage, filteredTransaksi.length) }} dari {{ filteredTransaksi.length }} transaksi
+            <span v-if="hasActiveFilters" class="text-blue-600 dark:text-blue-400">(hasil filter)</span>
           </div>
           
           <div class="flex items-center justify-center space-x-1">
@@ -278,6 +438,29 @@ const csvFileInput = ref<HTMLInputElement>();
 const showNotification = ref(false);
 const notificationMessage = ref('');
 
+// Filter state
+const showFilters = ref<boolean>(false);
+const selectedBrand = ref<string>('');
+const selectedMonth = ref<string>('');
+const startDate = ref<string>('');
+const endDate = ref<string>('');
+
+// Month options
+const monthOptions = ref([
+  { value: '01', label: 'Januari' },
+  { value: '02', label: 'Februari' },
+  { value: '03', label: 'Maret' },
+  { value: '04', label: 'April' },
+  { value: '05', label: 'Mei' },
+  { value: '06', label: 'Juni' },
+  { value: '07', label: 'Juli' },
+  { value: '08', label: 'Agustus' },
+  { value: '09', label: 'September' },
+  { value: '10', label: 'Oktober' },
+  { value: '11', label: 'November' },
+  { value: '12', label: 'Desember' },
+]);
+
 // Pagination state
 const currentPage = ref(1);
 const itemsPerPage = 31;
@@ -326,19 +509,61 @@ const transaksiHariIni = computed(() => {
   return daftarTransaksi.value;
 });
 
-// Pagination computed properties
+// Filter computed properties
+const availableBrands = computed(() => {
+  const brands = new Set<string>();
+  daftarTransaksi.value.forEach(transaksi => {
+    brands.add(transaksi.brand);
+  });
+  return Array.from(brands).sort();
+});
+
+const hasActiveFilters = computed(() => {
+  return selectedBrand.value || selectedMonth.value || (startDate.value && endDate.value);
+});
+
+const filteredTransaksi = computed(() => {
+  let filtered = daftarTransaksi.value;
+
+  // Filter by brand
+  if (selectedBrand.value) {
+    filtered = filtered.filter(transaksi => transaksi.brand === selectedBrand.value);
+  }
+
+  // Filter by month
+  if (selectedMonth.value) {
+    filtered = filtered.filter(transaksi => {
+      const transaksiMonth = new Date(transaksi.tanggal).getMonth() + 1;
+      return transaksiMonth.toString().padStart(2, '0') === selectedMonth.value;
+    });
+  }
+
+  // Filter by custom date range
+  if (startDate.value && endDate.value) {
+    filtered = filtered.filter(transaksi => {
+      const transaksiDate = new Date(transaksi.tanggal);
+      const start = new Date(startDate.value);
+      const end = new Date(endDate.value);
+      return transaksiDate >= start && transaksiDate <= end;
+    });
+  }
+
+  return filtered;
+});
+
+// Pagination computed properties - use filtered data
 const totalPages = computed(() => {
-  return Math.ceil(daftarTransaksi.value.length / itemsPerPage);
+  return Math.ceil(filteredTransaksi.value.length / itemsPerPage);
 });
 
 const paginatedTransaksi = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return daftarTransaksi.value.slice(start, end);
+  return filteredTransaksi.value.slice(start, end);
 });
 
 const showPagination = computed(() => {
-  return daftarTransaksi.value.length > itemsPerPage;
+  return filteredTransaksi.value.length > itemsPerPage;
 });
 
 function openDialog() {
@@ -369,8 +594,64 @@ function prevPage() {
   }
 }
 
+// Filter functions
+function applyFilters() {
+  // Reset pagination to first page when filters change
+  currentPage.value = 1;
+}
+
+function resetFilter() {
+  selectedBrand.value = '';
+  selectedMonth.value = '';
+  startDate.value = '';
+  endDate.value = '';
+  currentPage.value = 1;
+}
+
+function setQuickFilter(type: string) {
+  resetFilter();
+  const today = new Date();
+  
+  switch (type) {
+    case 'today':
+      startDate.value = today.toISOString().split('T')[0];
+      endDate.value = today.toISOString().split('T')[0];
+      break;
+    case 'week':
+      const weekAgo = new Date(today);
+      weekAgo.setDate(today.getDate() - 7);
+      startDate.value = weekAgo.toISOString().split('T')[0];
+      endDate.value = today.toISOString().split('T')[0];
+      break;
+    case 'month':
+      const monthAgo = new Date(today);
+      monthAgo.setDate(today.getDate() - 30);
+      startDate.value = monthAgo.toISOString().split('T')[0];
+      endDate.value = today.toISOString().split('T')[0];
+      break;
+    case 'current-month':
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      startDate.value = firstDay.toISOString().split('T')[0];
+      endDate.value = lastDay.toISOString().split('T')[0];
+      break;
+  }
+  applyFilters();
+}
+
+function getMonthName(monthValue: string): string {
+  const month = monthOptions.value.find(m => m.value === monthValue);
+  return month ? month.label : '';
+}
+
 function getActualIndex(paginatedIndex: number): number {
-  return (currentPage.value - 1) * itemsPerPage + paginatedIndex;
+  // Get the actual index from the filtered results
+  const filteredItem = paginatedTransaksi.value[paginatedIndex];
+  return daftarTransaksi.value.findIndex(item => 
+    item.tanggal === filteredItem.tanggal && 
+    item.brand === filteredItem.brand && 
+    item.nominal === filteredItem.nominal
+  );
 }
 
 function resetPaginationAfterAdd() {
@@ -530,3 +811,39 @@ function parseCSV(csv: string) {
   alert(`Berhasil import ${daftarTransaksi.value.length} transaksi dari CSV`);
 }
 </script>
+
+<style scoped>
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out forwards;
+}
+</style>
