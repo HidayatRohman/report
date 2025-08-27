@@ -95,7 +95,7 @@ const settings = computed(() => {
                                             class="h-10 w-10 flex items-center justify-center text-white font-bold text-lg"
                                         >
                                             {{ settings?.app_name ? 
-                                                settings.app_name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase() : 
+                                                settings.app_name.split(' ').map((word: string) => word.charAt(0)).join('').substring(0, 2).toUpperCase() : 
                                                 'KP' 
                                             }}
                                         </div>
