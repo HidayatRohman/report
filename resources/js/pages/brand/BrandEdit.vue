@@ -4,16 +4,16 @@
       <div class="max-w-2xl mx-auto">
         <h1 class="text-2xl font-bold mb-6">Edit Brand</h1>
         
-        <form @submit.prevent="handleSubmit" class="space-y-6 bg-white p-6 rounded-xl shadow">
+        <form @submit.prevent="handleSubmit" class="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
           <!-- Nama Brand -->
           <div class="space-y-2">
-            <label for="nama_brand" class="block text-sm font-semibold text-gray-700">Nama Brand</label>
+            <label for="nama_brand" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Nama Brand</label>
             <input 
               type="text" 
               id="nama_brand" 
               v-model="form.nama_brand" 
               required 
-              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Masukkan nama brand"
             />
             <div v-if="errors.nama_brand" class="text-red-500 text-sm">{{ errors.nama_brand }}</div>
@@ -21,13 +21,13 @@
 
           <!-- Pemilik -->
           <div class="space-y-2">
-            <label for="pemilik" class="block text-sm font-semibold text-gray-700">Pemilik</label>
+            <label for="pemilik" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Pemilik</label>
             <input 
               type="text" 
               id="pemilik" 
               v-model="form.pemilik" 
               required 
-              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Masukkan nama pemilik"
             />
             <div v-if="errors.pemilik" class="text-red-500 text-sm">{{ errors.pemilik }}</div>
@@ -35,12 +35,12 @@
 
           <!-- Deskripsi -->
           <div class="space-y-2">
-            <label for="deskripsi" class="block text-sm font-semibold text-gray-700">Deskripsi</label>
+            <label for="deskripsi" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Deskripsi</label>
             <textarea 
               id="deskripsi" 
               v-model="form.deskripsi" 
               rows="3"
-              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Masukkan deskripsi brand (opsional)"
             ></textarea>
             <div v-if="errors.deskripsi" class="text-red-500 text-sm">{{ errors.deskripsi }}</div>
@@ -51,7 +51,7 @@
             <button 
               type="button" 
               @click="$inertia.visit('/brand-list')"
-              class="flex-1 px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-all duration-200"
+              class="flex-1 px-6 py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 font-medium hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200"
             >
               Batal
             </button>
