@@ -25,3 +25,15 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Production build folders
+/dist
+/dist-full
+/build-output
+
+# Production ZIP files
+*.zip
+laravel-backend-*.zip
+public_html-frontend-*.zip
+omzet.anekabisnismurah.com-*.zip
+report-app-production-*.zip
