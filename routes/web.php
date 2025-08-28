@@ -30,30 +30,30 @@ Route::get('dashboard', function () {
     
     return Inertia::render('Dashboard', [
         'brands' => $brands,
-        'transaksis' => $transaksis
+        'transaksis' => $transaksis,
+        'userRole' => auth()->user()->role,
+        'canEdit' => auth()->user()->canEdit(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Brand routes
-Route::middleware(['auth', 'verified'])->group(function () {
+// Brand routes - require edit access (not Owner)
+Route::middleware(['auth', 'verified', 'role:manajer,spv,karyawan'])->group(function () {
     Route::resource('brands', BrandController::class);
     Route::get('brand-list', [BrandController::class, 'index'])->name('brand.list');
     Route::post('brand-input', [BrandController::class, 'store'])->name('brand.store');
+    Route::get('brand-input', [BrandController::class, 'create'])->name('brand.input');
     
     // Transaksi routes
     Route::resource('transaksis', TransaksiController::class);
     Route::put('transaksis/{id}', [TransaksiController::class, 'update'])->name('transaksis.update');
+    Route::get('transaksi-input', [TransaksiController::class, 'create'])->name('transaksi.input');
+    Route::post('transaksi-input', [TransaksiController::class, 'store'])->name('transaksi.store');
     
     // App Settings routes
     Route::get('settings/logo', [AppSettingController::class, 'logoSettings'])->name('settings.logo');
     Route::post('settings/logo', [AppSettingController::class, 'updateLogo'])->name('settings.logo.update');
     Route::delete('settings/logo', [AppSettingController::class, 'deleteLogo'])->name('settings.logo.delete');
 });
-
-Route::get('brand-input', [BrandController::class, 'create'])->middleware(['auth', 'verified'])->name('brand.input');
-
-Route::get('transaksi-input', [TransaksiController::class, 'create'])->middleware(['auth', 'verified'])->name('transaksi.input');
-Route::post('transaksi-input', [TransaksiController::class, 'store'])->middleware(['auth', 'verified'])->name('transaksi.store');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

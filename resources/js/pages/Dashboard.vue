@@ -25,6 +25,8 @@ interface Transaksi {
 const props = defineProps<{
   brands?: Brand[];
   transaksis?: Transaksi[];
+  userRole?: string;
+  canEdit?: boolean;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -408,9 +410,19 @@ function generateReport() {
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Transaksi Terbaru</h3>
-                        <button @click="navigateToTransaksi" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium">
+                        <button 
+                            v-if="props.canEdit" 
+                            @click="navigateToTransaksi" 
+                            class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+                        >
                             Lihat Semua
                         </button>
+                        <span 
+                            v-else 
+                            class="text-gray-500 dark:text-gray-400 text-sm"
+                        >
+                            5 Terakhir
+                        </span>
                     </div>
                     <div class="space-y-3">
                         <div v-for="(transaksi, idx) in recentTransaksi" :key="idx" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -434,8 +446,12 @@ function generateReport() {
 
                 <!-- Quick Actions -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Aksi Cepat</h3>
-                    <div class="grid grid-cols-2 gap-3">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        {{ props.canEdit ? 'Aksi Cepat' : 'Informasi' }}
+                    </h3>
+                    
+                    <!-- Actions for users who can edit -->
+                    <div v-if="props.canEdit" class="grid grid-cols-2 gap-3">
                         <button @click="navigateToBrand" class="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg">
                             <div class="flex items-center gap-3">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -484,6 +500,27 @@ function generateReport() {
                             </div>
                         </button>
                     </div>
+
+                    <!-- Read-only message for Owner -->
+                    <div v-else class="text-center py-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Mode Read-Only</h4>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">
+                            Anda memiliki akses untuk melihat semua data<br>
+                            tanpa kemampuan untuk mengedit atau menghapus.
+                        </p>
+                        <div class="inline-flex items-center mt-3 px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            Role: Owner
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -491,9 +528,19 @@ function generateReport() {
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Brand Terdaftar</h3>
-                    <button @click="navigateToBrand" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium">
+                    <button 
+                        v-if="props.canEdit" 
+                        @click="navigateToBrand" 
+                        class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+                    >
                         Kelola Brand
                     </button>
+                    <span 
+                        v-else 
+                        class="text-gray-500 dark:text-gray-400 text-sm"
+                    >
+                        {{ daftarBrand.length }} Brand
+                    </span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div v-for="(brand, idx) in daftarBrand" :key="idx" class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:shadow-md transition-shadow">

@@ -18,6 +18,15 @@ class DatabaseSeeder extends Seeder
 
         // Seeder untuk role akses - menggunakan updateOrCreate untuk menghindari duplicate
         User::updateOrCreate(
+            ['email' => 'owner@example.com'],
+            [
+                'name' => 'Owner',
+                'password' => $defaultPassword,
+                'role' => 'owner',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'manajer@example.com'],
             [
                 'name' => 'Manajer',

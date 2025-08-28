@@ -46,4 +46,36 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Check if user has specific role
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    /**
+     * Check if user has any of the given roles
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        return in_array($this->role, $roles);
+    }
+
+    /**
+     * Check if user can edit/delete (not Owner)
+     */
+    public function canEdit(): bool
+    {
+        return $this->role !== 'owner';
+    }
+
+    /**
+     * Check if user is Owner (read-only access)
+     */
+    public function isOwner(): bool
+    {
+        return $this->role === 'owner';
+    }
 }
