@@ -22,14 +22,14 @@ class RegisteredUserController extends Controller
     public function create(): Response
     {
         // Get app settings for logo and branding
-        $appSettings = AppSetting::first();
+        $appSettings = [
+            'app_name' => AppSetting::get('app_name', 'Kelola Pusat App'),
+            'logo' => AppSetting::get('logo'),
+            'favicon' => AppSetting::get('favicon'),
+        ];
         
         return Inertia::render('auth/Register', [
-            'appSettings' => $appSettings ? [
-                'app_name' => $appSettings->app_name,
-                'logo' => $appSettings->logo,
-                'favicon' => $appSettings->favicon,
-            ] : null,
+            'appSettings' => $appSettings,
         ]);
     }
 

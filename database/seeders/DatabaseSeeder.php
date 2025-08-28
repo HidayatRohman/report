@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -17,28 +16,37 @@ class DatabaseSeeder extends Seeder
 
         $defaultPassword = bcrypt('password');
 
-        // Seeder untuk role akses
-        User::factory()->create([
-            'name' => 'Manajer',
-            'email' => 'manajer@example.com',
-            'password' => $defaultPassword,
-            'role' => 'manajer',
-        ]);
+        // Seeder untuk role akses - menggunakan updateOrCreate untuk menghindari duplicate
+        User::updateOrCreate(
+            ['email' => 'manajer@example.com'],
+            [
+                'name' => 'Manajer',
+                'password' => $defaultPassword,
+                'role' => 'manajer',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'SPV',
-            'email' => 'spv@example.com',
-            'password' => $defaultPassword,
-            'role' => 'spv',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'spv@example.com'],
+            [
+                'name' => 'SPV',
+                'password' => $defaultPassword,
+                'role' => 'spv',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Karyawan',
-            'email' => 'karyawan@example.com',
-            'password' => $defaultPassword,
-            'role' => 'karyawan',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'karyawan@example.com'],
+            [
+                'name' => 'Karyawan',
+                'password' => $defaultPassword,
+                'role' => 'karyawan',
+            ]
+        );
 
+        // Seeder untuk app settings
+        $this->call(AppSettingSeeder::class);
+        
         // Seeder untuk brand
         $this->call(BrandSeeder::class);
         

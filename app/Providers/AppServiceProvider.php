@@ -24,15 +24,10 @@ class AppServiceProvider extends ServiceProvider
         // Share app settings with all Inertia pages
         Inertia::share([
             'appSettings' => function () {
-                $settings = AppSetting::first();
-                return $settings ? [
-                    'app_name' => AppSetting::get('app_name', 'Report App'),
-                    'logo' => AppSetting::get('logo', ''),
-                    'favicon' => AppSetting::get('favicon', ''),
-                ] : [
-                    'app_name' => 'Report App',
-                    'logo' => '',
-                    'favicon' => '',
+                return [
+                    'app_name' => AppSetting::get('app_name', 'Kelola Pusat App'),
+                    'logo' => AppSetting::get('logo'),
+                    'favicon' => AppSetting::get('favicon'),
                 ];
             }
         ]);
