@@ -497,19 +497,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $output .= "1. PHP_BINARY constant: " . (defined('PHP_BINARY') ? PHP_BINARY : 'Not defined') . "\n";
                 $output .= "   Executable: " . (defined('PHP_BINARY') && is_executable(PHP_BINARY) ? '✅ Yes' : '❌ No') . "\n\n";
                 
-                // Test common paths
+                // Test common paths (PHP 8.3 prioritized)
                 $commonPaths = [
-                    '/usr/bin/php',
-                    '/usr/local/bin/php',
-                    '/opt/cpanel/ea-php81/root/usr/bin/php',
-                    '/opt/cpanel/ea-php82/root/usr/bin/php',
-                    '/opt/cpanel/ea-php83/root/usr/bin/php',
-                    '/usr/local/php81/bin/php',
+                    '/opt/cpanel/ea-php83/root/usr/bin/php',    # cPanel PHP 8.3
+                    '/opt/cpanel/ea-php84/root/usr/bin/php',    # cPanel PHP 8.4
+                    '/usr/local/php83/bin/php',                # Common PHP 8.3
+                    '/usr/local/lsws/lsphp83/bin/php',         # LiteSpeed PHP 8.3
+                    '/usr/local/bin/php83',                    # Alternative PHP 8.3
+                    '/usr/bin/php83',                          # System PHP 8.3
+                    '/usr/bin/php',                            # Default system PHP
+                    '/usr/local/bin/php',                      # Alternative system PHP
+                    '/opt/cpanel/ea-php82/root/usr/bin/php',   # Fallback to 8.2
+                    '/opt/cpanel/ea-php81/root/usr/bin/php',   # Fallback to 8.1
                     '/usr/local/php82/bin/php',
-                    '/usr/local/php83/bin/php',
-                    '/usr/local/lsws/lsphp81/bin/php',
+                    '/usr/local/php81/bin/php',
                     '/usr/local/lsws/lsphp82/bin/php',
-                    '/usr/local/lsws/lsphp83/bin/php'
+                    '/usr/local/lsws/lsphp81/bin/php'
                 ];
                 
                 $output .= "2. Common PHP paths test:\n";
@@ -590,6 +593,9 @@ function executeCommand($command) {
         elseif (is_executable('/opt/cpanel/ea-php83/root/usr/bin/php')) {
             $phpPath = '/opt/cpanel/ea-php83/root/usr/bin/php';
         }
+        elseif (is_executable('/opt/cpanel/ea-php84/root/usr/bin/php')) {
+            $phpPath = '/opt/cpanel/ea-php84/root/usr/bin/php';
+        }
         // Method 3: Try to use 'php' directly (might work on some hosting)
         else {
             // Test if 'php' command works directly
@@ -610,13 +616,18 @@ function executeCommand($command) {
         // Method 5: Try common hosting-specific paths
         if (!$phpPath) {
             $commonPaths = [
-                '/usr/local/php81/bin/php',
+                '/usr/local/php83/bin/php',    # PHP 8.3 prioritized
+                '/usr/local/php84/bin/php',    # PHP 8.4 for future
                 '/usr/local/php82/bin/php', 
-                '/usr/local/php83/bin/php',
-                '/home/' . get_current_user() . '/public_html/cgi-bin/php',
-                '/usr/local/lsws/lsphp81/bin/php',
+                '/usr/local/php81/bin/php',
+                '/usr/local/lsws/lsphp83/bin/php',  # LiteSpeed PHP 8.3
+                '/usr/local/lsws/lsphp84/bin/php',  # LiteSpeed PHP 8.4
                 '/usr/local/lsws/lsphp82/bin/php',
-                '/usr/local/lsws/lsphp83/bin/php'
+                '/usr/local/lsws/lsphp81/bin/php',
+                '/home/' . get_current_user() . '/public_html/cgi-bin/php83',
+                '/home/' . get_current_user() . '/public_html/cgi-bin/php',
+                '/usr/local/bin/php83',
+                '/usr/bin/php83'
             ];
             
             foreach ($commonPaths as $path) {

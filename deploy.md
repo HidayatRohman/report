@@ -19,7 +19,7 @@ Panduan lengkap untuk deployment aplikasi Laravel + Vue.js Report Application ke
 ### Requirements Server
 
 #### Minimum Requirements
-- **PHP**: >= 8.1
+- **PHP**: >= 8.1 (Recommended: 8.3)
 - **MySQL/MariaDB**: >= 5.7 / >= 10.3
 - **Web Server**: Apache/Nginx
 - **Disk Space**: Minimum 500MB
@@ -439,17 +439,20 @@ php artisan key:generate --force
 **Solusi**:
 
 1. **Contact Hosting Provider** untuk mendapatkan path PHP yang benar
-2. **Common hosting PHP paths**:
+2. **Common PHP 8.3 hosting paths** (prioritized):
    ```bash
-   # cPanel hosting
-   /opt/cpanel/ea-php81/root/usr/bin/php
-   /opt/cpanel/ea-php82/root/usr/bin/php
+   # cPanel hosting PHP 8.3
    /opt/cpanel/ea-php83/root/usr/bin/php
    
-   # Other common paths
-   /usr/local/php81/bin/php
-   /usr/local/php82/bin/php
-   /usr/local/lsws/lsphp81/bin/php
+   # Other common PHP 8.3 paths
+   /usr/local/php83/bin/php
+   /usr/local/lsws/lsphp83/bin/php
+   /usr/local/bin/php83
+   /usr/bin/php83
+   
+   # Alternative versions (fallback)
+   /opt/cpanel/ea-php82/root/usr/bin/php
+   /opt/cpanel/ea-php81/root/usr/bin/php
    ```
 
 3. **Test PHP path** melalui admin tools "System Health Check"
