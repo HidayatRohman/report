@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\AppSetting;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Fix for older MySQL versions - set default string length
+        Schema::defaultStringLength(191);
+        
         // Share app settings with all Inertia pages
         Inertia::share([
             'appSettings' => function () {

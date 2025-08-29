@@ -423,7 +423,38 @@ find laravel/storage -type f -exec chmod 664 {} \;
 find laravel/storage -type d -exec chmod 775 {} \;
 ```
 
-#### 5. App Key Missing
+#### 5. MySQL Key Length Error (1071)
+
+**Error**: `SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 1000 bytes`
+
+**Penyebab**: MySQL versi lama (< 5.7.7) atau konfigurasi yang membatasi key length
+
+**Solusi**:
+
+1. **Via Admin Tools** (Recommended):
+   ```bash
+   # Akses admin-tools.php → Database → "Fix MySQL Key Length"
+   ```
+
+2. **Manual Fix** - Already implemented in AppServiceProvider.php:
+   ```php
+   // File: app/Providers/AppServiceProvider.php
+   Schema::defaultStringLength(191);
+   ```
+
+3. **Alternative Solutions**:
+   - Update MySQL ke versi 5.7.7+
+   - Ubah charset dari utf8mb4 ke utf8 di config/database.php
+   - Drop dan recreate database
+
+4. **Retry Migration**:
+   ```bash
+   # Setelah fix, jalankan:
+   php artisan migrate:fresh --force
+   # Atau via admin tools: "Fresh Migration"
+   ```
+
+#### 6. App Key Missing
 
 **Solusi**:
 ```bash
@@ -432,7 +463,7 @@ find laravel/storage -type d -exec chmod 775 {} \;
 php artisan key:generate --force
 ```
 
-#### 6. PHP Executable Not Found (Admin Tools)
+#### 7. PHP Executable Not Found (Admin Tools)
 
 **Error**: `Could not find PHP executable. Tried PHP_BINARY, /usr/bin/php, /usr/local/bin/php`
 

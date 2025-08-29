@@ -200,6 +200,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $output = executeCommand('php artisan migrate:fresh --force');
                 break;
                 
+            case 'fix_mysql_key_length':
+                $output = "MySQL Key Length Fix:\n\n";
+                
+                // Check current AppServiceProvider.php
+                $appServiceProvider = $laravelRoot . '/app/Providers/AppServiceProvider.php';
+                if (file_exists($appServiceProvider)) {
+                    $content = file_get_contents($appServiceProvider);
+                    
+                    if (strpos($content, 'Schema::defaultStringLength(191)') !== false) {
+                        $output .= "✅ AppServiceProvider already configured with Schema::defaultStringLength(191)\n";
+                    } else {
+                        $output .= "⚠️ AppServiceProvider needs to be updated\n";
+                        $output .= "Manual fix required: Add Schema::defaultStringLength(191) to boot() method\n\n";
+                    }
+                } else {
+                    $output .= "❌ AppServiceProvider.php not found\n";
+                }
+                
+                // Check MySQL version and configuration
+                try {
+                    $mysqlVersion = executeCommand('php artisan tinker --execute="echo DB::select(\'SELECT VERSION() as version\')[0]->version;"');
+                    $output .= "MySQL Version: " . trim($mysqlVersion) . "\n\n";
+                } catch (Exception $e) {
+                    $output .= "Could not detect MySQL version\n\n";
+                }
+                
+                // Provide solution steps
+                $output .= "Common Solutions:\n";
+                $output .= "1. Schema::defaultStringLength(191) - Already applied ✅\n";
+                $output .= "2. Update MySQL to 5.7.7+ for utf8mb4 support\n";
+                $output .= "3. Use utf8 charset instead of utf8mb4 (in config/database.php)\n";
+                $output .= "4. Drop and recreate database if migrations failed\n\n";
+                
+                $output .= "To retry migration:\n";
+                $output .= "1. Drop all tables in database\n";
+                $output .= "2. Run 'Fresh Migration' button\n";
+                break;
+                
             case 'config_cache':
                 $output = executeCommand('php artisan config:cache');
                 break;
@@ -893,6 +931,7 @@ function showLoginForm() {
                 <form method="post" style="margin: 0;">
                     <button type="submit" name="action" value="migrate">Run Migrations</button>
                     <button type="submit" name="action" value="migrate_fresh" class="danger" onclick="return confirm('This will delete all data. Are you sure?')">Fresh Migration</button>
+                    <button type="submit" name="action" value="fix_mysql_key_length" class="warning">Fix MySQL Key Length</button>
                 </form>
             </div>
 
