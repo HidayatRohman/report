@@ -229,7 +229,9 @@ Aplikasi dilengkapi dengan emergency admin tools untuk troubleshooting ketika ap
 
 #### 🗄️ Database Tools
 - **Run Migrations**: Jalankan migrasi database
+- **Run Database Seeder**: Populate database dengan sample data
 - **Fresh Migration**: Reset semua tabel (DANGER!)
+- **Fix MySQL Key Length**: Troubleshoot MySQL key length errors
 
 #### 🔧 Maintenance Mode
 - **Enable Maintenance**: Aktifkan mode maintenance

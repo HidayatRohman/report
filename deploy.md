@@ -294,14 +294,18 @@ php artisan migrate --force
 ### Step 4: Seed Database (Optional)
 
 ```bash
-# Untuk sample data
+# Via command line
 php artisan db:seed --force
 
-# Ini akan membuat user default:
-# Admin: admin@example.com / password
-# Manager: manajer@example.com / password  
-# User: user@example.com / password
+# Via Admin Tools (recommended untuk shared hosting)
+# Akses admin-tools.php → Database Tools → "Run Database Seeder"
 ```
+
+**Sample data yang akan dibuat:**
+- **Users**: Admin, Manager, User dengan default passwords
+- **Brands**: Sample brand data dengan logos
+- **Transactions**: Sample transaction data
+- **App Settings**: Basic application configurations
 
 ## ⚡ Optimasi Production
 

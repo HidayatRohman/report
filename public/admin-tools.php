@@ -200,6 +200,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $output = executeCommand('php artisan migrate:fresh --force');
                 break;
                 
+            case 'db_seed':
+                $output = executeCommand('php artisan db:seed --force');
+                break;
+                
             case 'fix_mysql_key_length':
                 $output = "MySQL Key Length Fix:\n\n";
                 
@@ -820,6 +824,8 @@ function showLoginForm() {
         button.danger:hover { background: #c82333; }
         button.warning { background: #ffc107; color: #212529; }
         button.warning:hover { background: #e0a800; }
+        button.success { background: #28a745; color: white; }
+        button.success:hover { background: #218838; }
         .output { 
             background: #f8f9fa; 
             border: 1px solid #e9ecef; 
@@ -930,6 +936,7 @@ function showLoginForm() {
                 <h3>Database</h3>
                 <form method="post" style="margin: 0;">
                     <button type="submit" name="action" value="migrate">Run Migrations</button>
+                    <button type="submit" name="action" value="db_seed" class="success">Run Database Seeder</button>
                     <button type="submit" name="action" value="migrate_fresh" class="danger" onclick="return confirm('This will delete all data. Are you sure?')">Fresh Migration</button>
                     <button type="submit" name="action" value="fix_mysql_key_length" class="warning">Fix MySQL Key Length</button>
                 </form>
