@@ -58,7 +58,6 @@ Route::middleware(['auth', 'verified', 'role:owner,manajer,spv,karyawan'])->grou
 Route::middleware(['auth', 'verified', 'role:manajer,spv,karyawan'])->group(function () {
     Route::resource('transaksis', TransaksiController::class)->except(['index', 'create', 'show']);
     Route::put('transaksis/{id}', [TransaksiController::class, 'update'])->name('transaksis.update');
-    Route::get('transaksi-input', [TransaksiController::class, 'create'])->name('transaksi.input');
     Route::post('transaksi-input', [TransaksiController::class, 'store'])->name('transaksi.store');
     
     // App Settings routes
