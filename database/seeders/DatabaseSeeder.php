@@ -59,7 +59,10 @@ class DatabaseSeeder extends Seeder
         // Seeder untuk brand
         $this->call(BrandSeeder::class);
         
-        // Seeder untuk transaksi
-        $this->call(TransaksiSeeder::class);
+        // Seeder untuk transaksi Nyore dengan data lengkap 2024-2025
+        $this->call(NyoreTransaksiSeeder::class);
+        
+        // Seeder untuk transaksi lainnya (optional)
+        // $this->call(TransaksiSeeder::class);
     }
 }
