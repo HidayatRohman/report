@@ -490,6 +490,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $output .= "Usage: " . round(($usedSpace / $totalSpace) * 100, 2) . "%\n";
                 break;
                 
+            case 'debug_php_path':
+                $output = "PHP Path Detection Debug:\n\n";
+                
+                // Test PHP_BINARY
+                $output .= "1. PHP_BINARY constant: " . (defined('PHP_BINARY') ? PHP_BINARY : 'Not defined') . "\n";
+                $output .= "   Executable: " . (defined('PHP_BINARY') && is_executable(PHP_BINARY) ? '✅ Yes' : '❌ No') . "\n\n";
+                
+                // Test common paths
+                $commonPaths = [
+                    '/usr/bin/php',
+                    '/usr/local/bin/php',
+                    '/opt/cpanel/ea-php81/root/usr/bin/php',
+                    '/opt/cpanel/ea-php82/root/usr/bin/php',
+                    '/opt/cpanel/ea-php83/root/usr/bin/php',
+                    '/usr/local/php81/bin/php',
+                    '/usr/local/php82/bin/php',
+                    '/usr/local/php83/bin/php',
+                    '/usr/local/lsws/lsphp81/bin/php',
+                    '/usr/local/lsws/lsphp82/bin/php',
+                    '/usr/local/lsws/lsphp83/bin/php'
+                ];
+                
+                $output .= "2. Common PHP paths test:\n";
+                foreach ($commonPaths as $path) {
+                    $exists = file_exists($path);
+                    $executable = is_executable($path);
+                    $output .= "   $path: " . ($executable ? '✅ Executable' : ($exists ? '⚠️ Exists but not executable' : '❌ Not found')) . "\n";
+                }
+                
+                // Test 'which php' command
+                $output .= "\n3. which php command:\n";
+                $which = @shell_exec('which php 2>/dev/null');
+                $output .= "   Result: " . ($which ? trim($which) : 'Command failed or not found') . "\n";
+                
+                // Test 'php --version' directly
+                $output .= "\n4. Direct 'php --version' test:\n";
+                $phpVersion = @shell_exec('php --version 2>/dev/null');
+                if ($phpVersion) {
+                    $output .= "   ✅ 'php' command works directly\n";
+                    $output .= "   Version: " . trim(explode("\n", $phpVersion)[0]) . "\n";
+                } else {
+                    $output .= "   ❌ 'php' command not available\n";
+                }
+                
+                // Server info
+                $output .= "\n5. Server Information:\n";
+                $output .= "   Current user: " . get_current_user() . "\n";
+                $output .= "   Server software: " . ($_SERVER['SERVER_SOFTWARE'] ?? 'Unknown') . "\n";
+                $output .= "   PHP SAPI: " . php_sapi_name() . "\n";
+                $output .= "   Document root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'Unknown') . "\n";
+                $output .= "   shell_exec available: " . (function_exists('shell_exec') ? '✅ Yes' : '❌ No') . "\n";
+                
+                $output .= "\n💡 Recommendation: Contact your hosting provider with this information to get the correct PHP path.";
+                break;
+                
             case 'logout':
                 session_destroy();
                 header('Location: ' . $_SERVER['PHP_SELF']);
@@ -519,25 +574,77 @@ function executeCommand($command) {
         if (defined('PHP_BINARY') && is_executable(PHP_BINARY)) {
             $phpPath = PHP_BINARY;
         }
-        // Method 2: Try common paths
+        // Method 2: Try common shared hosting paths
         elseif (is_executable('/usr/bin/php')) {
             $phpPath = '/usr/bin/php';
         }
         elseif (is_executable('/usr/local/bin/php')) {
             $phpPath = '/usr/local/bin/php';
         }
-        // Method 3: Use which/where command (if available)
+        elseif (is_executable('/opt/cpanel/ea-php81/root/usr/bin/php')) {
+            $phpPath = '/opt/cpanel/ea-php81/root/usr/bin/php';
+        }
+        elseif (is_executable('/opt/cpanel/ea-php82/root/usr/bin/php')) {
+            $phpPath = '/opt/cpanel/ea-php82/root/usr/bin/php';
+        }
+        elseif (is_executable('/opt/cpanel/ea-php83/root/usr/bin/php')) {
+            $phpPath = '/opt/cpanel/ea-php83/root/usr/bin/php';
+        }
+        // Method 3: Try to use 'php' directly (might work on some hosting)
         else {
-            $which = trim(shell_exec('which php 2>/dev/null') ?: '');
+            // Test if 'php' command works directly
+            $testResult = @shell_exec('php --version 2>/dev/null');
+            if ($testResult && strpos($testResult, 'PHP') !== false) {
+                $phpPath = 'php';
+            }
+        }
+        
+        // Method 4: Use which/where command (if available)
+        if (!$phpPath) {
+            $which = trim(@shell_exec('which php 2>/dev/null') ?: '');
             if ($which && is_executable($which)) {
                 $phpPath = $which;
             }
         }
         
+        // Method 5: Try common hosting-specific paths
+        if (!$phpPath) {
+            $commonPaths = [
+                '/usr/local/php81/bin/php',
+                '/usr/local/php82/bin/php', 
+                '/usr/local/php83/bin/php',
+                '/home/' . get_current_user() . '/public_html/cgi-bin/php',
+                '/usr/local/lsws/lsphp81/bin/php',
+                '/usr/local/lsws/lsphp82/bin/php',
+                '/usr/local/lsws/lsphp83/bin/php'
+            ];
+            
+            foreach ($commonPaths as $path) {
+                if (is_executable($path)) {
+                    $phpPath = $path;
+                    break;
+                }
+            }
+        }
+        
         if ($phpPath) {
-            $command = str_replace('php ', escapeshellarg($phpPath) . ' ', $command);
+            // Only escape if it's a full path (contains /)
+            if (strpos($phpPath, '/') !== false) {
+                $command = str_replace('php ', escapeshellarg($phpPath) . ' ', $command);
+            } else {
+                $command = str_replace('php ', $phpPath . ' ', $command);
+            }
         } else {
-            return 'Error: Could not find PHP executable. Tried PHP_BINARY, /usr/bin/php, /usr/local/bin/php';
+            // Last resort: try without path (some hosting allows this)
+            $debugInfo = "PHP Detection Debug:\n";
+            $debugInfo .= "PHP_BINARY: " . (defined('PHP_BINARY') ? PHP_BINARY : 'Not defined') . "\n";
+            $debugInfo .= "PHP_BINARY executable: " . (defined('PHP_BINARY') && is_executable(PHP_BINARY) ? 'Yes' : 'No') . "\n";
+            $debugInfo .= "Current user: " . get_current_user() . "\n";
+            $debugInfo .= "Server software: " . ($_SERVER['SERVER_SOFTWARE'] ?? 'Unknown') . "\n";
+            $debugInfo .= "PHP SAPI: " . php_sapi_name() . "\n";
+            
+            return 'Error: Could not find PHP executable. ' . $debugInfo . 
+                   'Contact your hosting provider for the correct PHP path.';
         }
     }
     
@@ -808,6 +915,7 @@ function showLoginForm() {
                     <button type="submit" name="action" value="health_check">System Health Check</button>
                     <button type="submit" name="action" value="composer_status">Composer Status</button>
                     <button type="submit" name="action" value="disk_space">Disk Space Usage</button>
+                    <button type="submit" name="action" value="debug_php_path" class="warning">Debug PHP Path</button>
                 </form>
             </div>
 

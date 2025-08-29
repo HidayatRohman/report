@@ -432,6 +432,33 @@ find laravel/storage -type d -exec chmod 775 {} \;
 php artisan key:generate --force
 ```
 
+#### 6. PHP Executable Not Found (Admin Tools)
+
+**Error**: `Could not find PHP executable. Tried PHP_BINARY, /usr/bin/php, /usr/local/bin/php`
+
+**Solusi**:
+
+1. **Contact Hosting Provider** untuk mendapatkan path PHP yang benar
+2. **Common hosting PHP paths**:
+   ```bash
+   # cPanel hosting
+   /opt/cpanel/ea-php81/root/usr/bin/php
+   /opt/cpanel/ea-php82/root/usr/bin/php
+   /opt/cpanel/ea-php83/root/usr/bin/php
+   
+   # Other common paths
+   /usr/local/php81/bin/php
+   /usr/local/php82/bin/php
+   /usr/local/lsws/lsphp81/bin/php
+   ```
+
+3. **Test PHP path** melalui admin tools "System Health Check"
+
+4. **Alternative solutions**:
+   - Use hosting control panel (cPanel, Plesk) for Laravel commands
+   - Create custom PHP wrapper script if needed
+   - Some hosting may disable shell_exec entirely
+
 ### Debug Tools
 
 #### 1. Laravel Logs
