@@ -25,14 +25,23 @@ class AppServiceProvider extends ServiceProvider
         // Fix for older MySQL versions - set default string length
         Schema::defaultStringLength(191);
         
-        // Share app settings with all Inertia pages
+        // Share app settings with all Inertia pages (with error handling)
         Inertia::share([
             'appSettings' => function () {
-                return [
-                    'app_name' => AppSetting::get('app_name', 'Kelola Pusat App'),
-                    'logo' => AppSetting::get('logo'),
-                    'favicon' => AppSetting::get('favicon'),
-                ];
+                try {
+                    return [
+                        'app_name' => AppSetting::get('app_name', 'Kelola Pusat App'),
+                        'logo' => AppSetting::get('logo'),
+                        'favicon' => AppSetting::get('favicon'),
+                    ];
+                } catch (\Exception $e) {
+                    // Fallback if database is not ready
+                    return [
+                        'app_name' => 'Report Application',
+                        'logo' => null,
+                        'favicon' => null,
+                    ];
+                }
             }
         ]);
     }
