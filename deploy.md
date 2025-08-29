@@ -422,7 +422,33 @@ Test beberapa URL:
    - Use "Clear All Cache" untuk cache problems
    - Use "System Health Check" untuk verify fixes
 
-#### 2. Storage/Images Not Loading
+#### 2. View [app] not found / Bootstrap Error
+
+**Error**: `View [app] not found` atau `Bootstrap Laravel and handle the request error`
+
+**Penyebab**: Path di `index.php` tidak mengarah ke Laravel backend yang benar
+
+**Solusi**:
+
+1. **Sudah Fixed Automatically**: `index.php` sudah menggunakan auto-detection
+2. **Manual Fix** jika masih error:
+   ```php
+   // Edit public_html/index.php, ubah path dari:
+   __DIR__.'/../'
+   // Menjadi:
+   __DIR__.'/../laravel'
+   ```
+
+3. **Verify Structure** via admin-tools.php → "Debug 500 Error"
+
+**Expected File Structure**:
+```
+Server Root/
+├── public_html/          # Frontend files (index.php, admin-tools.php)
+└── laravel/             # Backend files (app/, bootstrap/, config/, etc.)
+```
+
+#### 3. Storage/Images Not Loading
 
 **Solusi**:
 ```bash
