@@ -29,8 +29,10 @@ $currentDir = __DIR__;
 $possiblePaths = [
     // Production: public_html/ and laravel/ are siblings
     dirname($currentDir) . '/laravel',
-    // Alternative production structure
-    dirname(dirname($currentDir)) . '/laravel', 
+    // Alternative: private_html/ and laravel/ structure  
+    dirname(dirname($currentDir)) . '/laravel',
+    // Another alternative for nested structures
+    dirname(dirname(dirname($currentDir))) . '/laravel',
     // Development: normal Laravel structure
     dirname(__DIR__),
     // If admin-tools.php is in domain root
@@ -691,6 +693,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $output .= "\n💡 Recommendation: Contact your hosting provider with this information to get the correct PHP path.";
                 break;
                 
+            case 'debug_hosting_structure':
+                $output = "Hosting Structure Diagnostic:\n\n";
+                
+                // Current location info
+                $output .= "1. Current Location:\n";
+                $output .= "   Current Dir: " . __DIR__ . "\n";
+                $output .= "   Script: " . ($_SERVER['SCRIPT_NAME'] ?? 'Unknown') . "\n";
+                $output .= "   Document Root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'Unknown') . "\n";
+                
+                // Path analysis
+                $output .= "\n2. Path Analysis:\n";
+                $currentDir = __DIR__;
+                $output .= "   Parent Dir: " . dirname($currentDir) . "\n";
+                $output .= "   Grandparent Dir: " . dirname(dirname($currentDir)) . "\n";
+                $output .= "   Great-grandparent Dir: " . dirname(dirname(dirname($currentDir))) . "\n";
+                
+                // Test Laravel paths
+                $output .= "\n3. Laravel Root Detection:\n";
+                $testPaths = [
+                    'Sibling (public_html/laravel)' => dirname($currentDir) . '/laravel',
+                    'Uncle (private_html structure)' => dirname(dirname($currentDir)) . '/laravel',
+                    'Great-uncle (nested structure)' => dirname(dirname(dirname($currentDir))) . '/laravel',
+                    'Parent (development)' => dirname(__DIR__),
+                    'Child (same level)' => $currentDir . '/laravel',
+                ];
+                
+                foreach ($testPaths as $label => $path) {
+                    $exists = is_dir($path);
+                    $hasBootstrap = $exists && file_exists($path . '/bootstrap/app.php');
+                    $hasViews = $exists && is_dir($path . '/resources/views');
+                    $hasAppView = $exists && file_exists($path . '/resources/views/app.blade.php');
+                    
+                    $output .= "   $label:\n";
+                    $output .= "     Path: $path\n";
+                    $output .= "     Exists: " . ($exists ? '✅ Yes' : '❌ No') . "\n";
+                    if ($exists) {
+                        $output .= "     Bootstrap: " . ($hasBootstrap ? '✅ Yes' : '❌ No') . "\n";
+                        $output .= "     Views: " . ($hasViews ? '✅ Yes' : '❌ No') . "\n";
+                        $output .= "     app.blade.php: " . ($hasAppView ? '✅ Yes' : '❌ No') . "\n";
+                    }
+                    $output .= "\n";
+                }
+                
+                // Current Laravel root detection
+                $output .= "4. Current Detection Result:\n";
+                $output .= "   Selected Laravel Root: " . ($laravelRoot ?: 'Not found') . "\n";
+                if ($laravelRoot) {
+                    $viewsPath = $laravelRoot . '/resources/views/app.blade.php';
+                    $output .= "   app.blade.php path: $viewsPath\n";
+                    $output .= "   app.blade.php exists: " . (file_exists($viewsPath) ? '✅ Yes' : '❌ No') . "\n";
+                }
+                
+                $output .= "\n💡 Upload files to the correct Laravel directory path shown above.";
+                break;
+                
             case 'debug_view_error':
                 $output = "View Error Diagnostic:\n\n";
                 
@@ -1140,6 +1197,7 @@ function showLoginForm() {
                 <form method="post" style="margin: 0;">
                     <button type="submit" name="action" value="health_check">System Health Check</button>
                     <button type="submit" name="action" value="debug_500_error" class="danger">Debug 500 Error</button>
+                    <button type="submit" name="action" value="debug_hosting_structure" class="danger">Debug Hosting Structure</button>
                     <button type="submit" name="action" value="debug_view_error" class="warning">Debug View Error</button>
                     <button type="submit" name="action" value="composer_status">Composer Status</button>
                     <button type="submit" name="action" value="disk_space">Disk Space Usage</button>

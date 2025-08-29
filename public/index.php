@@ -8,8 +8,10 @@ define('LARAVEL_START', microtime(true));
 // Auto-detect Laravel root directory based on hosting structure
 $possiblePaths = [
     __DIR__.'/../laravel',     // Production: public_html/ and laravel/ are siblings  
+    __DIR__.'/../../laravel',  // Alternative: private_html/ and laravel/ structure
     __DIR__.'/..',             // Development: normal Laravel structure
     __DIR__.'/../app',         // Alternative structure where app is in parent
+    dirname(dirname(__DIR__)).'/laravel', // Another alternative for nested structures
 ];
 
 $laravelRoot = null;
