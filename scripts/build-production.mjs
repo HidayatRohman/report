@@ -1,6 +1,10 @@
-const fs = require('fs-extra');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs-extra';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Konfigurasi folder output
 const DIST_DIR = path.join(__dirname, '..', 'dist');
