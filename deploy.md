@@ -382,18 +382,45 @@ Test beberapa URL:
 
 #### 1. Internal Server Error (500)
 
+**Error**: `HTTP ERROR 500` atau "This page isn't working"
+
+**Penyebab Umum**:
+- File permissions salah (storage/, bootstrap/cache/)
+- .env file tidak ada atau APP_KEY belum di-generate
+- PHP version atau extensions tidak compatible
+- Database connection error
+- PHP syntax error atau missing dependencies
+
 **Solusi**:
-```bash
-# Check error logs
-tail -f laravel/storage/logs/laravel.log
 
-# Clear cache
-# Via admin-tools.php → "Clear All Cache"
+1. **Via Admin Tools** (Recommended):
+   ```bash
+   # Akses admin-tools.php → System Health → "Debug 500 Error"
+   # Akan memberikan diagnostic lengkap
+   ```
 
-# Check permissions
-chmod -R 775 laravel/storage/
-chmod -R 775 laravel/bootstrap/cache/
-```
+2. **Manual Troubleshooting**:
+   ```bash
+   # Check error logs
+   tail -f laravel/storage/logs/laravel.log
+   
+   # Clear cache
+   # Via admin-tools.php → "Clear All Cache"
+   
+   # Check permissions
+   chmod -R 775 laravel/storage/
+   chmod -R 775 laravel/bootstrap/cache/
+   
+   # Generate APP_KEY if missing
+   php artisan key:generate --force
+   ```
+
+3. **Step-by-Step Fix via Admin Tools**:
+   - Use "Debug 500 Error" untuk identify masalah
+   - Use "Generate App Key" jika APP_KEY missing
+   - Use "Fix Storage Permissions" untuk permission issues
+   - Use "Clear All Cache" untuk cache problems
+   - Use "System Health Check" untuk verify fixes
 
 #### 2. Storage/Images Not Loading
 

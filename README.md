@@ -247,8 +247,10 @@ Aplikasi dilengkapi dengan emergency admin tools untuk troubleshooting ketika ap
 
 #### 🏥 System Health
 - **System Health Check**: Check kesehatan sistem PHP dan Laravel
+- **Debug 500 Error**: Comprehensive diagnostic untuk HTTP 500 error
 - **Composer Status**: Status composer dependencies
 - **Disk Space Usage**: Penggunaan disk space
+- **Debug PHP Path**: Troubleshoot PHP executable detection
 
 #### 🛠️ Advanced Tools
 - **Create Symlinks**: Buat symlinks yang diperlukan

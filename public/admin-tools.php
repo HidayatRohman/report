@@ -532,6 +532,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $output .= "Usage: " . round(($usedSpace / $totalSpace) * 100, 2) . "%\n";
                 break;
                 
+            case 'debug_500_error':
+                $output = "HTTP 500 Error Diagnostic:\n\n";
+                
+                // 1. Check PHP version and extensions
+                $output .= "1. PHP Environment:\n";
+                $output .= "   Version: " . phpversion() . "\n";
+                $output .= "   SAPI: " . php_sapi_name() . "\n";
+                
+                $requiredExtensions = ['openssl', 'pdo', 'mbstring', 'tokenizer', 'xml', 'ctype', 'json', 'curl'];
+                $output .= "   Required Extensions:\n";
+                foreach ($requiredExtensions as $ext) {
+                    $loaded = extension_loaded($ext);
+                    $output .= "   - $ext: " . ($loaded ? '✅ Loaded' : '❌ Missing') . "\n";
+                }
+                
+                // 2. Check critical files
+                $output .= "\n2. Critical Files Check:\n";
+                $criticalFiles = [
+                    '.env' => $laravelRoot . '/.env',
+                    'artisan' => $laravelRoot . '/artisan',
+                    'index.php' => __DIR__ . '/index.php',
+                    'composer.json' => $laravelRoot . '/composer.json'
+                ];
+                
+                foreach ($criticalFiles as $name => $path) {
+                    $exists = file_exists($path);
+                    $readable = $exists && is_readable($path);
+                    $output .= "   - $name: " . ($readable ? '✅ OK' : ($exists ? '⚠️ Not readable' : '❌ Missing')) . "\n";
+                }
+                
+                // 3. Check permissions
+                $output .= "\n3. Directory Permissions:\n";
+                $directories = [
+                    'storage/' => $laravelRoot . '/storage',
+                    'bootstrap/cache/' => $laravelRoot . '/bootstrap/cache',
+                    'public/' => __DIR__
+                ];
+                
+                foreach ($directories as $name => $path) {
+                    if (is_dir($path)) {
+                        $writable = is_writable($path);
+                        $perms = substr(sprintf('%o', fileperms($path)), -4);
+                        $output .= "   - $name: " . ($writable ? '✅' : '❌') . " Writable (Perms: $perms)\n";
+                    } else {
+                        $output .= "   - $name: ❌ Directory not found\n";
+                    }
+                }
+                
+                // 4. Check Laravel environment
+                $output .= "\n4. Laravel Environment:\n";
+                $envFile = $laravelRoot . '/.env';
+                if (file_exists($envFile)) {
+                    $envContent = file_get_contents($envFile);
+                    $hasAppKey = strpos($envContent, 'APP_KEY=') !== false && strpos($envContent, 'APP_KEY=base64:') !== false;
+                    $output .= "   - .env exists: ✅ Yes\n";
+                    $output .= "   - APP_KEY set: " . ($hasAppKey ? '✅ Yes' : '❌ No') . "\n";
+                    
+                    // Check for common .env issues
+                    preg_match('/APP_DEBUG=(.*)/', $envContent, $debugMatch);
+                    $appDebug = isset($debugMatch[1]) ? trim($debugMatch[1]) : 'not set';
+                    $output .= "   - APP_DEBUG: $appDebug\n";
+                } else {
+                    $output .= "   - .env exists: ❌ No\n";
+                }
+                
+                // 5. Check Laravel logs
+                $output .= "\n5. Laravel Logs:\n";
+                $logPath = $laravelRoot . '/storage/logs/laravel.log';
+                if (file_exists($logPath) && is_readable($logPath)) {
+                    $logContent = @file_get_contents($logPath);
+                    if ($logContent) {
+                        $lines = explode("\n", $logContent);
+                        $recentLines = array_slice($lines, -10); // Last 10 lines
+                        $output .= "   Recent log entries:\n";
+                        foreach ($recentLines as $line) {
+                            if (trim($line)) {
+                                $output .= "   " . substr($line, 0, 100) . "\n";
+                            }
+                        }
+                    } else {
+                        $output .= "   - Log file empty or unreadable\n";
+                    }
+                } else {
+                    $output .= "   - Log file not found or unreadable\n";
+                }
+                
+                // 6. Web Server Check
+                $output .= "\n6. Web Server Info:\n";
+                $output .= "   - Server Software: " . ($_SERVER['SERVER_SOFTWARE'] ?? 'Unknown') . "\n";
+                $output .= "   - Document Root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'Unknown') . "\n";
+                $output .= "   - Script Name: " . ($_SERVER['SCRIPT_NAME'] ?? 'Unknown') . "\n";
+                
+                // 7. Quick Fixes
+                $output .= "\n7. Quick Fix Recommendations:\n";
+                $output .= "   1. Generate APP_KEY: Use 'Generate App Key' button\n";
+                $output .= "   2. Fix Permissions: Use 'Fix Storage Permissions' button\n";
+                $output .= "   3. Clear Cache: Use 'Clear All Cache' button\n";
+                $output .= "   4. Check .env: Use 'Show .env Content' button\n";
+                $output .= "   5. Run Health Check: Use 'System Health Check' button\n";
+                break;
+                
             case 'debug_php_path':
                 $output = "PHP Path Detection Debug:\n\n";
                 
@@ -970,6 +1071,7 @@ function showLoginForm() {
                 <h3>System Health</h3>
                 <form method="post" style="margin: 0;">
                     <button type="submit" name="action" value="health_check">System Health Check</button>
+                    <button type="submit" name="action" value="debug_500_error" class="danger">Debug 500 Error</button>
                     <button type="submit" name="action" value="composer_status">Composer Status</button>
                     <button type="submit" name="action" value="disk_space">Disk Space Usage</button>
                     <button type="submit" name="action" value="debug_php_path" class="warning">Debug PHP Path</button>
