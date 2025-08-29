@@ -16,7 +16,8 @@ class BrandController extends Controller
     {
         $brands = Brand::all();
         return Inertia::render('brand/BrandList', [
-            'brands' => $brands
+            'brands' => $brands,
+            'canEdit' => auth()->user()->canEdit(),
         ]);
     }
 
@@ -27,7 +28,8 @@ class BrandController extends Controller
     {
         $brands = Brand::all();
         return Inertia::render('brand/BrandForm', [
-            'brands' => $brands
+            'brands' => $brands,
+            'canEdit' => auth()->user()->canEdit(),
         ]);
     }
 

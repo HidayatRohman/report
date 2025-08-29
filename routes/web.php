@@ -36,15 +36,27 @@ Route::get('dashboard', function () {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Brand routes - require edit access (not Owner)
-Route::middleware(['auth', 'verified', 'role:manajer,spv,karyawan'])->group(function () {
-    Route::resource('brands', BrandController::class);
+// Brand routes - Owner can view but not edit, manajer/spv/karyawan can edit
+Route::middleware(['auth', 'verified', 'role:owner,manajer,spv,karyawan'])->group(function () {
     Route::get('brand-list', [BrandController::class, 'index'])->name('brand.list');
-    Route::post('brand-input', [BrandController::class, 'store'])->name('brand.store');
     Route::get('brand-input', [BrandController::class, 'create'])->name('brand.input');
-    
-    // Transaksi routes
-    Route::resource('transaksis', TransaksiController::class);
+});
+
+// Brand edit routes - require edit access (not Owner)
+Route::middleware(['auth', 'verified', 'role:manajer,spv,karyawan'])->group(function () {
+    Route::resource('brands', BrandController::class)->except(['index', 'create', 'show']);
+    Route::post('brand-input', [BrandController::class, 'store'])->name('brand.store');
+});
+
+// Transaksi routes - Owner can view but not edit, manajer/spv/karyawan can edit
+Route::middleware(['auth', 'verified', 'role:owner,manajer,spv,karyawan'])->group(function () {
+    Route::get('transaksi-input', [TransaksiController::class, 'create'])->name('transaksi.input');
+    Route::get('transaksi-list', [TransaksiController::class, 'index'])->name('transaksi.list');
+});
+
+// Transaksi edit routes - require edit access (not Owner)
+Route::middleware(['auth', 'verified', 'role:manajer,spv,karyawan'])->group(function () {
+    Route::resource('transaksis', TransaksiController::class)->except(['index', 'create', 'show']);
     Route::put('transaksis/{id}', [TransaksiController::class, 'update'])->name('transaksis.update');
     Route::get('transaksi-input', [TransaksiController::class, 'create'])->name('transaksi.input');
     Route::post('transaksi-input', [TransaksiController::class, 'store'])->name('transaksi.store');

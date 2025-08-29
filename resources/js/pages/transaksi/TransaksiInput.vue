@@ -9,7 +9,7 @@
                 <h1 class="text-xl md:text-2xl font-bold mb-2 text-gray-900 dark:text-white">Input Transaksi</h1>
                 <p class="text-gray-600 dark:text-gray-300">Kelola transaksi harian brand Anda</p>
               </div>
-              <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <div v-if="canEdit" class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button 
                   @click="triggerCsvImport" 
                   class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium hover:from-green-700 hover:to-emerald-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base"
@@ -30,6 +30,16 @@
                   <span class="hidden sm:inline">Tambah Transaksi</span>
                   <span class="sm:hidden">Tambah</span>
                 </button>
+              </div>
+              <div v-else class="flex justify-center">
+                <div class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gray-500 text-white font-medium flex items-center justify-center gap-2 text-sm sm:text-base cursor-not-allowed">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  <span class="hidden sm:inline">Read Only Mode</span>
+                  <span class="sm:hidden">Read Only</span>
+                </div>
               </div>
             </div>
 
@@ -261,8 +271,11 @@
                 <td class="py-2 text-gray-900 dark:text-gray-100">{{ item.brand }}</td>
                 <td class="py-2 text-gray-900 dark:text-gray-100">{{ formatRupiah(item.nominal) }}</td>
                 <td class="py-2">
-                  <button @click="editTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-sm">Edit</button>
-                  <button @click="deleteTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2 text-sm">Hapus</button>
+                  <div v-if="canEdit" class="flex gap-2">
+                    <button @click="editTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-sm">Edit</button>
+                    <button @click="deleteTransaksi(getActualIndex(idx))" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-sm">Hapus</button>
+                  </div>
+                  <span v-else class="text-xs text-gray-500 dark:text-gray-400 italic">Read-only</span>
                 </td>
               </tr>
             </tbody>
@@ -428,7 +441,10 @@ interface Transaksi {
 const props = defineProps<{
   brands?: Brand[];
   transaksis?: Transaksi[];
+  canEdit?: boolean;
 }>();
+
+const canEdit = computed(() => props.canEdit ?? false);
 
 const page = usePage();
 const daftarTransaksi = ref<Transaksi[]>(props.transaksis || []);

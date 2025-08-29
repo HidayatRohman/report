@@ -10,6 +10,7 @@
                 <p class="text-gray-600 dark:text-gray-300">Kelola brand dan logo perusahaan Anda</p>
               </div>
               <button 
+                v-if="canEdit"
                 @click="openDialog" 
                 class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
@@ -19,6 +20,14 @@
                 <span class="hidden sm:inline">Tambah Brand</span>
                 <span class="sm:hidden">Tambah</span>
               </button>
+              <div v-else class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gray-500 text-white font-medium flex items-center justify-center gap-2 text-sm sm:text-base cursor-not-allowed">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                <span class="hidden sm:inline">Read Only</span>
+                <span class="sm:hidden">Read Only</span>
+              </div>
             </div>
 
             <!-- Stats Cards -->
@@ -102,7 +111,7 @@
                     <td class="py-3 text-sm text-gray-600 dark:text-gray-300">{{ brand.pemilik }}</td>
                     <td class="py-3 text-sm text-gray-600 dark:text-gray-300">{{ brand.deskripsi || '-' }}</td>
                     <td class="py-3">
-                      <div class="flex gap-2">
+                      <div v-if="canEdit" class="flex gap-2">
                         <button 
                           @click="editBrand(brand)" 
                           class="px-3 py-1 rounded text-xs bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition-colors"
@@ -115,6 +124,9 @@
                         >
                           Hapus
                         </button>
+                      </div>
+                      <div v-else class="text-xs text-gray-500 dark:text-gray-400 italic">
+                        Read-only
                       </div>
                     </td>
                   </tr>
@@ -145,7 +157,7 @@
                     <p v-if="brand.deskripsi" class="text-xs text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{{ brand.deskripsi }}</p>
                   </div>
                 </div>
-                <div class="flex gap-2">
+                <div v-if="canEdit" class="flex gap-2">
                   <button 
                     @click="editBrand(brand)" 
                     class="flex-1 px-3 py-2 rounded text-xs bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition-colors font-medium"
@@ -158,6 +170,9 @@
                   >
                     Hapus
                   </button>
+                </div>
+                <div v-else class="px-3 py-2 text-center text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 rounded">
+                  Read-only
                 </div>
               </div>
             </div>
@@ -206,6 +221,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { ref, onMounted } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import BrandDialog from './BrandDialog.vue';
+import { computed } from 'vue';
 
 interface Brand {
   id: number;
@@ -219,7 +235,10 @@ interface Brand {
 
 const props = defineProps<{
   brands?: Brand[];
+  canEdit?: boolean;
 }>();
+
+const canEdit = computed(() => props.canEdit ?? false);
 
 const page = usePage();
 const brands = ref<Brand[]>(props.brands || []);

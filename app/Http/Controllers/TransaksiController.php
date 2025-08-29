@@ -30,7 +30,8 @@ class TransaksiController extends Controller
         
         return Inertia::render('transaksi/TransaksiList', [
             'transaksis' => $transaksis,
-            'brands' => $brands
+            'brands' => $brands,
+            'canEdit' => auth()->user()->canEdit(),
         ]);
     }
 
@@ -55,7 +56,8 @@ class TransaksiController extends Controller
         
         return Inertia::render('transaksi/TransaksiInput', [
             'brands' => $brands,
-            'transaksis' => $transaksis
+            'transaksis' => $transaksis,
+            'canEdit' => auth()->user()->canEdit(),
         ]);
     }
 

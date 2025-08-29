@@ -3,7 +3,16 @@
     <div class="p-8">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">Daftar Brand</h1>
-        <button @click="openDialog()" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Tambah Brand</button>
+        <button 
+          v-if="canEdit"
+          @click="openDialog()" 
+          class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+        >
+          Tambah Brand
+        </button>
+        <div v-else class="px-4 py-2 rounded bg-gray-500 text-white cursor-not-allowed">
+          Read Only
+        </div>
       </div>
       <table class="w-full text-left border-collapse shadow rounded-xl overflow-hidden">
         <thead class="bg-gray-100">
@@ -20,8 +29,11 @@
             <td class="py-2 px-4">{{ brand.pemilik }}</td>
             <td class="py-2 px-4">{{ brand.deskripsi || '-' }}</td>
             <td class="py-2 px-4">
-              <button @click="editBrand(brand)" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500">Edit</button>
-              <button @click="deleteBrand(brand)" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2">Hapus</button>
+              <div v-if="canEdit" class="flex gap-2">
+                <button @click="editBrand(brand)" class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500">Edit</button>
+                <button @click="deleteBrand(brand)" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600">Hapus</button>
+              </div>
+              <span v-else class="text-xs text-gray-500 italic">Read-only</span>
             </td>
           </tr>
         </tbody>
@@ -39,7 +51,7 @@
 </template>
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import BrandDialog from './BrandDialog.vue';
 
@@ -54,7 +66,10 @@ interface Brand {
 
 const props = defineProps<{
   brands: Brand[];
+  canEdit?: boolean;
 }>();
+
+const canEdit = computed(() => props.canEdit ?? false);
 
 const dialogOpen = ref(false);
 const editingBrand = ref<Brand | null>(null);
