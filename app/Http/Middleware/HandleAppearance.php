@@ -16,7 +16,13 @@ class HandleAppearance
      */
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('appearance', $request->cookie('appearance') ?? 'system');
+        try {
+            View::share('appearance', $request->cookie('appearance') ?? 'system');
+        } catch (\Exception $e) {
+            // Fallback if View facade fails (during bootstrap issues)
+            // Continue without appearance sharing
+            \Log::warning('HandleAppearance middleware failed: ' . $e->getMessage());
+        }
 
         return $next($request);
     }

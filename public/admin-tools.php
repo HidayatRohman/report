@@ -691,6 +691,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $output .= "\n💡 Recommendation: Contact your hosting provider with this information to get the correct PHP path.";
                 break;
                 
+            case 'debug_view_error':
+                $output = "View Error Diagnostic:\n\n";
+                
+                // 1. Check views directory
+                $output .= "1. Views Directory Check:\n";
+                $viewsPath = $laravelRoot . '/resources/views';
+                if (is_dir($viewsPath)) {
+                    $output .= "   ✅ Views directory exists: $viewsPath\n";
+                    
+                    // Check for app.blade.php
+                    $appView = $viewsPath . '/app.blade.php';
+                    if (file_exists($appView)) {
+                        $output .= "   ✅ app.blade.php exists\n";
+                        $output .= "   File size: " . filesize($appView) . " bytes\n";
+                    } else {
+                        $output .= "   ❌ app.blade.php missing\n";
+                    }
+                } else {
+                    $output .= "   ❌ Views directory not found: $viewsPath\n";
+                }
+                
+                // 2. Check view config
+                $output .= "\n2. View Configuration:\n";
+                try {
+                    $configPath = $laravelRoot . '/config/view.php';
+                    if (file_exists($configPath)) {
+                        $output .= "   ✅ view.php config exists\n";
+                    } else {
+                        $output .= "   ❌ view.php config missing\n";
+                    }
+                } catch (Exception $e) {
+                    $output .= "   ❌ Error checking view config: " . $e->getMessage() . "\n";
+                }
+                
+                // 3. Check cache directory
+                $output .= "\n3. View Cache:\n";
+                $viewCachePath = $laravelRoot . '/storage/framework/views';
+                if (is_dir($viewCachePath)) {
+                    $writable = is_writable($viewCachePath);
+                    $perms = substr(sprintf('%o', fileperms($viewCachePath)), -4);
+                    $output .= "   ✅ Cache directory exists: $viewCachePath\n";
+                    $output .= "   Writable: " . ($writable ? '✅ Yes' : '❌ No') . " (Perms: $perms)\n";
+                } else {
+                    $output .= "   ❌ View cache directory missing: $viewCachePath\n";
+                }
+                
+                // 4. Check database connection (for AppSetting)
+                $output .= "\n4. Database Connection (for AppSetting):\n";
+                try {
+                    $testQuery = executeCommand('php artisan tinker --execute="echo \\"DB connection test\\"; DB::select(\\"SELECT 1 as test\\"); echo \\"OK\\";"');
+                    if (strpos($testQuery, 'OK') !== false) {
+                        $output .= "   ✅ Database connection working\n";
+                    } else {
+                        $output .= "   ⚠️ Database connection issue\n";
+                        $output .= "   " . substr($testQuery, 0, 200) . "\n";
+                    }
+                } catch (Exception $e) {
+                    $output .= "   ❌ Database test failed: " . $e->getMessage() . "\n";
+                }
+                
+                // 5. Quick fixes
+                $output .= "\n5. Quick Fixes:\n";
+                $output .= "   1. Clear view cache: Use 'Clear All Cache' button\n";
+                $output .= "   2. Fix storage permissions: Use 'Fix Storage Permissions'\n";
+                $output .= "   3. Run migrations: Use 'Run Migrations' if AppSetting table missing\n";
+                $output .= "   4. Check database: Use 'Run Database Seeder' for sample settings\n";
+                break;
+                
             case 'logout':
                 session_destroy();
                 header('Location: ' . $_SERVER['PHP_SELF']);
@@ -1072,6 +1140,7 @@ function showLoginForm() {
                 <form method="post" style="margin: 0;">
                     <button type="submit" name="action" value="health_check">System Health Check</button>
                     <button type="submit" name="action" value="debug_500_error" class="danger">Debug 500 Error</button>
+                    <button type="submit" name="action" value="debug_view_error" class="warning">Debug View Error</button>
                     <button type="submit" name="action" value="composer_status">Composer Status</button>
                     <button type="submit" name="action" value="disk_space">Disk Space Usage</button>
                     <button type="submit" name="action" value="debug_php_path" class="warning">Debug PHP Path</button>
