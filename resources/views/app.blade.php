@@ -33,7 +33,11 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         @php
-            $favicon = \App\Models\AppSetting::get('favicon', '');
+            try {
+                $favicon = \App\Models\AppSetting::get('favicon', '');
+            } catch (\Exception $e) {
+                $favicon = '';
+            }
         @endphp
         
         @if($favicon)

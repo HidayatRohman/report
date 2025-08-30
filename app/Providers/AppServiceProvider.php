@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\AppSetting;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,14 +22,26 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Share app settings with all Inertia pages
+        // Fix for older MySQL versions - set default string length
+        Schema::defaultStringLength(191);
+        
+        // Share app settings with all Inertia pages (with error handling)
         Inertia::share([
             'appSettings' => function () {
-                return [
-                    'app_name' => AppSetting::get('app_name', 'Kelola Pusat App'),
-                    'logo' => AppSetting::get('logo'),
-                    'favicon' => AppSetting::get('favicon'),
-                ];
+                try {
+                    return [
+                        'app_name' => AppSetting::get('app_name', 'Kelola Pusat App'),
+                        'logo' => AppSetting::get('logo'),
+                        'favicon' => AppSetting::get('favicon'),
+                    ];
+                } catch (\Exception $e) {
+                    // Fallback if database is not ready
+                    return [
+                        'app_name' => 'Report Application',
+                        'logo' => null,
+                        'favicon' => null,
+                    ];
+                }
             }
         ]);
     }
