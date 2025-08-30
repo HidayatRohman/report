@@ -14,7 +14,7 @@ const LARAVEL_DIR = path.join(DIST_DIR, 'laravel');
 const PUBLIC_HTML_DIR = path.join(DIST_DIR, 'public_html');
 
 // Konfigurasi files yang akan di-copy
-const BACKEND_FILES = ['app', 'bootstrap', 'config', 'database', 'routes', 'storage', 'vendor', 'artisan', 'composer.json', 'composer.lock', '.env.example'];
+const BACKEND_FILES = ['app', 'bootstrap', 'config', 'database', 'public', 'resources', 'routes', 'storage', 'vendor', 'artisan', 'composer.json', 'composer.lock', '.env.example'];
 const FRONTEND_SOURCE = path.join(ROOT_DIR, 'public');
 
 console.log('🚀 Memulai build production (optimized)...\n');
