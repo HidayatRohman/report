@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-    <div class="flex items-center justify-between mb-6">
-      <div>
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+      <div class="flex-1 min-w-0">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
           {{ chartTitle }}
         </h3>
@@ -10,34 +10,119 @@
         </p>
       </div>
       <div class="flex items-center gap-2">
-        <select 
-          v-model="viewType" 
-          @change="updateChart"
-          class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        <button 
+          @click="showFilters = !showFilters" 
+          class="px-3 sm:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center gap-2 text-sm"
         >
-          <option value="period">Berdasarkan Periode</option>
-          <option value="year">Berdasarkan Tahun</option>
-        </select>
-        
-        <select 
-          v-if="viewType === 'period'"
-          v-model="selectedPeriod" 
-          @change="updateChart"
-          class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-        >
-          <option value="3">3 Bulan Terakhir</option>
-          <option value="6">6 Bulan Terakhir</option>
-          <option value="12">12 Bulan Terakhir</option>
-        </select>
-        
-        <select 
-          v-if="viewType === 'year'"
-          v-model="selectedYear" 
-          @change="updateChart"
-          class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-        >
-          <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-        </select>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+          </svg>
+          <span class="hidden sm:inline">Filter</span>
+          <svg 
+            class="w-4 h-4 transition-transform duration-200" 
+            :class="{ 'rotate-180': showFilters }" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Section (Collapsible) -->
+    <div 
+      v-show="showFilters" 
+      class="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 mb-6 transition-all duration-300"
+      :class="{ 'animate-slideDown': showFilters, 'animate-slideUp': !showFilters }"
+    >
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h4 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+            </svg>
+            Filter Chart
+          </h4>
+          
+          <!-- Reset Filter Button -->
+          <button 
+            @click="resetFilters" 
+            class="px-3 py-1.5 text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 flex items-center gap-1.5"
+          >
+            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            <span class="hidden sm:inline">Reset</span>
+          </button>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- View Type Filter -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <span class="hidden sm:inline">Jenis Tampilan:</span>
+              <span class="sm:hidden flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h2a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Tampilan
+              </span>
+            </label>
+            <select 
+              v-model="viewType" 
+              @change="updateChart"
+              class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="period">Berdasarkan Periode</option>
+              <option value="year">Berdasarkan Tahun</option>
+            </select>
+          </div>
+          
+          <!-- Period Filter -->
+          <div v-if="viewType === 'period'" class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <span class="hidden sm:inline">Periode:</span>
+              <span class="sm:hidden flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Periode
+              </span>
+            </label>
+            <select 
+              v-model="selectedPeriod" 
+              @change="updateChart"
+              class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="3">3 Bulan Terakhir</option>
+              <option value="6">6 Bulan Terakhir</option>
+              <option value="12">12 Bulan Terakhir</option>
+            </select>
+          </div>
+          
+          <!-- Year Filter -->
+          <div v-if="viewType === 'year'" class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <span class="hidden sm:inline">Tahun:</span>
+              <span class="sm:hidden flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Tahun
+              </span>
+            </label>
+            <select 
+              v-model="selectedYear" 
+              @change="updateChart"
+              class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -111,6 +196,7 @@ const chartContainer = ref<HTMLElement>();
 const selectedPeriod = ref(6);
 const viewType = ref<'period' | 'year'>('period');
 const selectedYear = ref<number>(new Date().getFullYear());
+const showFilters = ref<boolean>(false);
 let chartInstance: any = null;
 
 // Brand colors
@@ -393,6 +479,13 @@ const updateChart = async () => {
   renderChart();
 };
 
+const resetFilters = () => {
+  viewType.value = 'period';
+  selectedPeriod.value = 6;
+  selectedYear.value = new Date().getFullYear();
+  updateChart();
+};
+
 watch([() => props.transaksiData, selectedPeriod, viewType, selectedYear], async () => {
   updateChart();
 }, { deep: true });
@@ -406,3 +499,39 @@ onMounted(async () => {
   renderChart();
 });
 </script>
+
+<style scoped>
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out forwards;
+}
+</style>
