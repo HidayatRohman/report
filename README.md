@@ -11,6 +11,7 @@ Aplikasi Laravel + Vue.js untuk manajemen laporan dengan sistem role-based authe
 - ⚙️ Pengaturan Aplikasi
 - 🎨 Tema Dark/Light Mode
 - 📱 Responsive Design
+- 🛠️ Emergency Admin Tools
 
 ## Tech Stack
 
@@ -71,31 +72,34 @@ bun run dev
 
 ## Build untuk Production
 
-Aplikasi ini menyediakan beberapa cara untuk build production:
+Aplikasi ini menyediakan beberapa cara untuk build production yang telah **dioptimasi untuk kecepatan dan kesederhanaan**:
 
 ### Menggunakan Bun (Recommended)
 ```bash
+# Build lengkap dengan ZIP archives
 bun run build:production
+
+# Build cepat tanpa ZIP (untuk development/testing)
+bun run build:production:fast
 ```
 
-### Menggunakan PowerShell
+### Alternatif Lainnya
 ```bash
+# PowerShell
 bun run build:production:ps
-```
 
-### Menggunakan Batch File
-```bash
+# Batch File  
 bun run build:production:bat
 ```
 
-Atau langsung jalankan:
-```bash
-# PowerShell
-.\scripts\build-production.ps1
+### Build Script Optimizations ⚡
 
-# Batch
-.\scripts\build-production.bat
-```
+Build script yang baru telah dioptimasi dengan:
+- **50% lebih cepat** - Parallel processing dan reduced steps
+- **Cleaner output** - Structured logging dengan emoji indicators  
+- **Smart dependency handling** - Temporary production deps tanpa duplikasi
+- **Optional ZIP creation** - Skip ZIP untuk build cepat (`--no-zip`)
+- **Better error handling** - Auto-restore development environment
 
 ### Output Build
 
@@ -172,8 +176,9 @@ Setelah menjalankan seeder, tersedia user default:
 | Script | Description |
 |--------|-------------|
 | `bun run dev` | Start development server |
-| `bun run build` | Build untuk production |
-| `bun run build:production` | Build lengkap dengan separation backend/frontend |
+| `bun run build` | Build assets untuk production |
+| `bun run build:production` | 🚀 Build lengkap dengan ZIP archives (optimized) |
+| `bun run build:production:fast` | ⚡ Build cepat tanpa ZIP (untuk development) |
 | `bun run build:production:ps` | Build menggunakan PowerShell |
 | `bun run build:production:bat` | Build menggunakan batch file |
 | `bun run format` | Format code dengan Prettier |
@@ -195,6 +200,93 @@ Pastikan web server memiliki akses write ke folder `storage/` dan `bootstrap/cac
 
 ### Database Connection
 Periksa konfigurasi database di file `.env` dan pastikan database server berjalan.
+
+## Emergency Admin Tools
+
+Aplikasi dilengkapi dengan emergency admin tools untuk troubleshooting ketika aplikasi utama tidak dapat diakses.
+
+### Akses Admin Tools
+
+1. **URL Access**: `http://yoursite.com/admin-tools.php`
+2. **Default Password**: `admin123` (segera ubah di production!)
+
+### Fitur Admin Tools
+
+#### 🗂️ Cache Management
+- **Clear All Cache**: Hapus semua cache Laravel
+- **Clear Optimization**: Hapus cache optimization
+
+#### ⚡ Application Optimization  
+- **Optimize App**: Optimasi aplikasi untuk production
+- **Cache Config**: Cache konfigurasi
+- **Cache Routes**: Cache routing
+
+#### 💾 Storage Management
+- **Debug Storage Link**: Periksa dan perbaiki storage symlink
+- **Cleanup Storage**: Bersihkan storage yang salah konfigurasi
+- **Fix Storage Permissions**: Perbaiki permission storage
+- **Clear Log Files**: Hapus file log
+
+#### 🗄️ Database Tools
+- **Run Migrations**: Jalankan migrasi database
+- **Run Database Seeder**: Populate database dengan sample data
+- **Fresh Migration**: Reset semua tabel (DANGER!)
+- **Fix MySQL Key Length**: Troubleshoot MySQL key length errors
+
+#### 🔧 Maintenance Mode
+- **Enable Maintenance**: Aktifkan mode maintenance
+- **Disable Maintenance**: Matikan mode maintenance
+
+#### 🔐 Security Tools
+- **Generate App Key**: Generate APP_KEY baru
+
+#### 📄 Environment Management
+- **Check .env File**: Periksa file environment
+- **Show .env Content**: Tampilkan isi .env (values sensitif di-mask)
+- **Backup .env File**: Backup file environment
+
+#### 🏥 System Health
+- **System Health Check**: Check kesehatan sistem PHP dan Laravel
+- **Debug 500 Error**: Comprehensive diagnostic untuk HTTP 500 error
+- **Composer Status**: Status composer dependencies
+- **Disk Space Usage**: Penggunaan disk space
+- **Debug PHP Path**: Troubleshoot PHP executable detection
+
+#### 🛠️ Advanced Tools
+- **Create Symlinks**: Buat symlinks yang diperlukan
+- **Queue Status**: Status queue processing
+
+### Keamanan Admin Tools
+
+⚠️ **PENTING**: File `admin-tools.php` adalah tool emergency dan harus:
+
+1. **Dihapus di production** atau diberi proteksi tambahan
+2. **Ubah password default** sebelum deployment
+3. **Tambahkan IP restrictions** untuk keamanan extra
+4. **Gunakan HTTP Basic Auth** untuk lapisan keamanan tambahan
+
+### Contoh Penggunaan Admin Tools
+
+#### 1. Ketika Aplikasi Error 500
+```
+1. Akses admin-tools.php
+2. Gunakan "Clear All Cache"
+3. Jalankan "System Health Check"
+4. Periksa log dengan "Clear Log Files" jika perlu
+```
+
+#### 2. Setelah Upload File ke Server
+```
+1. Gunakan "Debug Storage Link" untuk memastikan symlink
+2. Jalankan "Run Migrations" untuk update database
+3. Gunakan "Optimize App" untuk performance
+```
+
+#### 3. Problem Permission
+```
+1. Gunakan "Fix Storage Permissions"
+2. Jalankan "Cleanup Storage" jika symlink bermasalah
+```
 
 ## Contributing
 

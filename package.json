@@ -5,6 +5,7 @@
         "build": "vite build",
         "build:ssr": "vite build && vite build --ssr",
         "build:production": "bun run scripts/build-production.mjs",
+        "build:production:fast": "bun run scripts/build-production.mjs --no-zip",
         "build:production:ps": "powershell -ExecutionPolicy Bypass -File scripts/build-production.ps1",
         "build:production:bat": "scripts\\build-production.bat",
         "dev": "vite",

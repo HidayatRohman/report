@@ -5,16 +5,38 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+// Auto-detect Laravel root directory based on hosting structure
+$possiblePaths = [
+    __DIR__.'/../laravel',     // Production: public_html/ and laravel/ are siblings  
+    __DIR__.'/../../laravel',  // Alternative: private_html/ and laravel/ structure
+    __DIR__.'/..',             // Development: normal Laravel structure
+    __DIR__.'/../app',         // Alternative structure where app is in parent
+    dirname(dirname(__DIR__)).'/laravel', // Another alternative for nested structures
+];
+
+$laravelRoot = null;
+foreach ($possiblePaths as $path) {
+    if (is_dir($path) && file_exists($path . '/bootstrap/app.php')) {
+        $laravelRoot = $path;
+        break;
+    }
+}
+
+// Fallback to default production structure if not found
+if (!$laravelRoot) {
+    $laravelRoot = __DIR__.'/../laravel';
+}
+
 // Determine if the application is in maintenance mode...
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+if (file_exists($maintenance = $laravelRoot.'/storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
 // Register the Composer autoloader...
-require __DIR__.'/../vendor/autoload.php';
+require $laravelRoot.'/vendor/autoload.php';
 
 // Bootstrap Laravel and handle the request...
 /** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once $laravelRoot.'/bootstrap/app.php';
 
 $app->handleRequest(Request::capture());
