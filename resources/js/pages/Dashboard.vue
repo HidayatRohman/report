@@ -36,14 +36,72 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+// Helper function to build correct image URL
+function buildImageUrl(logoPath: string): string {
+  // Clean the path - remove any leading slashes or 'storage/' prefix
+  let cleanPath = logoPath;
+  if (cleanPath.startsWith('/storage/')) {
+    cleanPath = cleanPath.substring(9); // Remove '/storage/'
+  } else if (cleanPath.startsWith('storage/')) {
+    cleanPath = cleanPath.substring(8); // Remove 'storage/'
+  } else if (cleanPath.startsWith('/')) {
+    cleanPath = cleanPath.substring(1); // Remove leading '/'
+  }
+  
+  // Build the full URL
+  const baseUrl = window.location.origin;
+  const fullUrl = `${baseUrl}/storage/${cleanPath}`;
+  
+  console.log('Building image URL:', { 
+    original: logoPath, 
+    cleaned: cleanPath, 
+    final: fullUrl 
+  });
+  
+  return fullUrl;
+}
+
 // Data refs - initialize with props data
-const daftarBrand = ref<Array<{ namaBrand: string; namaCV: string; logoUrl: string | null }>>(
-  (props.brands || []).map(brand => ({
-    namaBrand: brand.nama_brand,
-    namaCV: brand.pemilik,
-    logoUrl: brand.logo_path ? `/storage/${brand.logo_path}` : null
-  }))
+const daftarBrand = ref<Array<{ 
+  namaBrand: string; 
+  namaCV: string; 
+  logoUrl: string | null;
+  imageLoaded?: boolean;
+  imageError?: boolean;
+}>>(
+  (props.brands || []).map(brand => {
+    console.log('Processing brand:', brand);
+    return {
+      namaBrand: brand.nama_brand,
+      namaCV: brand.pemilik,
+      logoUrl: brand.logo_path ? buildImageUrl(brand.logo_path) : null,
+      imageLoaded: false,
+      imageError: false
+    };
+  })
 );
+
+// Image handling functions
+function handleImageError(event: Event) {
+  const img = event.target as HTMLImageElement;
+  console.error('Image failed to load:', {
+    src: img.src,
+    naturalWidth: img.naturalWidth,
+    naturalHeight: img.naturalHeight,
+    complete: img.complete
+  });
+  
+  // Note: Error state is handled by reactive data in template
+}
+
+function handleImageLoad(event: Event) {
+  const img = event.target as HTMLImageElement;
+  console.log('Image loaded successfully:', {
+    src: img.src,
+    naturalWidth: img.naturalWidth,
+    naturalHeight: img.naturalHeight
+  });
+}
 
 const daftarTransaksi = ref<Array<{ tanggal: string; brand: string; nominal: number }>>(
   (props.transaksis || []).map(transaksi => {
@@ -564,11 +622,46 @@ function generateReport() {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     <div v-for="(brand, idx) in daftarBrand" :key="idx" class="p-3 sm:p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:shadow-md transition-shadow">
                         <div class="flex items-center gap-3">
-                            <img v-if="brand.logoUrl" :src="brand.logoUrl" alt="Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover flex-shrink-0" />
-                            <div v-else class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                </svg>
+                            <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
+                                <!-- Image with loading state -->
+                                <div v-if="brand.logoUrl" class="w-full h-full">
+                                    <img 
+                                        :src="brand.logoUrl" 
+                                        :alt="`Logo ${brand.namaBrand}`" 
+                                        class="w-full h-full rounded-lg object-cover transition-opacity duration-200"
+                                        :class="{ 'opacity-0': !brand.imageLoaded }"
+                                        @load="brand.imageLoaded = true; handleImageLoad($event)"
+                                        @error="brand.imageError = true; handleImageError($event)"
+                                        v-show="!brand.imageError"
+                                    />
+                                    <!-- Loading placeholder -->
+                                    <div 
+                                        v-if="!brand.imageLoaded && !brand.imageError"
+                                        class="absolute inset-0 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center animate-pulse"
+                                    >
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <!-- Error fallback -->
+                                    <div 
+                                        v-if="brand.imageError"
+                                        class="w-full h-full bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center"
+                                    >
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <!-- No logo fallback -->
+                                <div 
+                                    v-else 
+                                    class="w-full h-full bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center"
+                                >
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                </div>
                             </div>
                             <div class="min-w-0 flex-1">
                                 <p class="font-medium text-gray-900 dark:text-white text-sm sm:text-base truncate">{{ brand.namaBrand }}</p>
